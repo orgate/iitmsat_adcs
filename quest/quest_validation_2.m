@@ -1,0 +1,35 @@
+%%%%%%%%
+% The following file checks for the validity of quest algorithm
+
+%%%% Validation procedure %%%%%%%%
+% Assume a random rotation matrix and check for obtaining same 
+% rotation matrix through quest
+
+% Assuming a random rotation matrix
+a=360*rand(1);b=360*rand(1);c=360*rand(1); %Euler angs of true orientation
+ A=[cosd(a) -sind(a) 0;sind(a) cosd(a) 0;0 0 1]...
+    *[cosd(b) 0 sind(b);0 1 0;-sind(b) 0 cosd(b)]*[1 0 0;0 cosd(c) -sind(c);...
+     0 sind(c) cosd(c)];
+ 
+vo=rand(3,1);
+vo=vo/sqrt(sum(vo.*vo))
+vb=A*vo;% Actual vector1 in body frame
+wo=rand(3,1);
+wo=wo/sqrt(sum(wo.*wo))
+wb=A*wo;% Actual vector2 in body frame
+%%%%%%%%%%%%%%Calculation of Rotation matrix with no error in sensor values%%%%%%%%
+K=zeros(4,4);
+s=[1;1];%weights
+B=s(1)*(vb*vo')+s(2)*(wb*wo');
+S=B+B';
+Z=[B(2,3)-B(3,2),B(3,1)-B(1,3),B(1,2)-B(2,1)]';
+sig=trace(B);
+K(1:3,1:3)=S-sig*eye(3);
+K(4,1:3)=Z';
+K(1:3,4)=Z;
+K(4,4)=sig;
+[E1, lambda]=eig(K);
+[val1 posn1]=max(lambda);
+[val2 posn2]=max(val1);
+Ad=Quaternion_to_DCM(E1(:,posn2))
+check=A'*Ad; %check for check=I

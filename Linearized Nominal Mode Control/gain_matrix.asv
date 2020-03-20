@@ -1,0 +1,10 @@
+function K=gain_matrix(wo,poles)
+%this function generates the gain matrix with given poles
+Isatinv=
+B=cat(2,Isatinv,zeros(3,3));
+G=cat(1,B,zeros(3,6));
+A=@state_matrix;
+F=A(wo);
+
+K=place(F,G,poles);
+

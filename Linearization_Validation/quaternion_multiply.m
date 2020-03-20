@@ -1,0 +1,7 @@
+function y=quaternion_multiply(x1, x2)
+y=zeros(4,1);
+y(4)=2*x1(4)*x2(4)-sum(x1.*x2);
+temp=cross(x1(1:3),x2(1:3))+x1(4)*x2(1:3)+x2(4)*x1(1:3);
+y=[temp; y(4)];
+y=y/norm(y);
+end

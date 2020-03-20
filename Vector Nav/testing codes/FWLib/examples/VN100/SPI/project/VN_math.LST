@@ -1,0 +1,959 @@
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 1   
+
+
+C51 COMPILER V9.05, COMPILATION OF MODULE VN_MATH
+OBJECT MODULE PLACED IN .\VN_math.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\VN_math.c DEBUG OBJECTEXTEND OBJECT(.\VN_math.obj)
+
+line level    source
+
+   1          /***************** (C) COPYRIGHT 2009 VectorNav Technologies *******************
+   2          * File Name          : VN100.c
+   3          * Author             : John Brashear
+   4          * Version            : V1.0.0
+   5          * Date               : 09/26/2009
+   6          * Description        : This file provides all of the firmware functions specific
+   7          *                    : to the VN100.
+   8          ********************************************************************************
+   9          * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING
+  10          * CUSTOMERS WITH EXAMPLE CODE IN ORDER TO SAVE THEM TIME. AS A RESULT,
+  11          * VECTORNAV SHALL NOT BE HELD LIABLE FOR ANY DIRECT, INDIRECT OR 
+  12          * CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE 
+  13          * CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE 
+  14          * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  15          *******************************************************************************/
+  16          
+  17          /* Includes ------------------------------------------------------------------*/
+  18          #include "VN_math.h"
+*** WARNING C322 IN LINE 113 OF ..\VN_math.h: unknown identifier
+  19          #include <math.h>
+  20          /* Private typedef -----------------------------------------------------------*/
+  21          /* Private define ------------------------------------------------------------*/
+  22          /* Private macro -------------------------------------------------------------*/
+  23          /* Private variables ---------------------------------------------------------*/
+  24          /* Private function prototypes -----------------------------------------------*/
+  25          /* Private functions ---------------------------------------------------------*/
+  26          
+  27          /*******************************************************************************
+  28          * Function Name  : VN_CrossP(float *A, float *B, float *C)
+  29          * Description    : Compute the cross product of vector A with vector B.
+  30          * Equation       : C = cross(A, B)                                        
+  31          * Input          : A -> 3x1 vector
+  32          *                  B -> 3x1 vector
+  33          *                  C -> 3x1 vector
+  34          * Output         : None
+  35          * Return         : None
+  36          *******************************************************************************/
+  37          void VN_CrossP(float *A, float *B, float *C){
+  38   1        C[0] = A[1]*B[2]-A[2]*B[1];
+  39   1        C[1] = A[2]*B[0]-A[0]*B[2];
+  40   1        C[2] = A[0]*A[1]-A[1]*B[0];
+  41   1      }
+  42          
+  43          /*******************************************************************************
+  44          * Function Name  : VN_VecAdd(float *A, float *B, unsigned long rows, float *C)
+  45          * Description    : Compute the addition of vector A with vector B.
+  46          * Equation       : C = A + B
+  47          * Input          : A -> vector with length given by rows
+  48          *                : B -> vector with length given by rows
+  49          *                : rows -> length of vector A, B, and C
+  50          * Output         : C -> result of vector addition
+  51          * Return         : None
+  52          *******************************************************************************/
+  53          void VN_VecAdd(float *A, float *B, unsigned long rows, float *C){
+  54   1        unsigned long i;
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 2   
+
+  55   1        for(i=0;i<rows;i++) C[i] = A[i] + B[i];
+  56   1      }
+  57          
+  58          /*******************************************************************************
+  59          * Function Name  : VN_VecSub(float *A, float *B, unsigned long rows, float *C)
+  60          * Description    : Compute the subtraction of vector A with vector B.
+  61          * Equation       : C = A - B                                        
+  62          * Input          : A -> vector with length given by rows
+  63          *                : B -> vector with length given by rows
+  64          *                : rows -> length of vector A, B, and C
+  65          * Output         : C -> result of vector subtraction
+  66          * Return         : None
+  67          *******************************************************************************/
+  68          void VN_VecSub(float *A, float *B, unsigned long rows, float *C){
+  69   1        unsigned long i;
+  70   1        for(i=0;i<rows;i++) C[i] = A[i] - B[i];
+  71   1      }
+  72          
+  73          /*******************************************************************************
+  74          * Function Name  : VN_VecMultT(float *A, float *BT, unsigned long rows, float **C)
+  75          * Description    : Compute the multiplication of a vector with the transpose of
+  76          *                  another vector. The result will be a square matrix with the
+  77          *                  size of nxn where n=rows.
+  78          * Equation       : C = A * transpose(B)                                        
+  79          * Input          : A -> vector with length given by rows
+  80          *                : BT -> vector with length given by rows
+  81          *                : rows -> length of vector A and B
+  82          * Output         : C -> result of multiplication of A with the transpose of B
+  83          * Return         : None
+  84          *******************************************************************************/
+  85          void VN_VecMultT(float *A, float *BT, unsigned long rows, float **C){
+  86   1        unsigned long i, j;
+  87   1        for(i=0;i<rows; i++){
+  88   2          for(j=0;j<rows; j++){
+  89   3            C[i][j] = A[i]*BT[j];
+  90   3          }
+  91   2        }
+  92   1      }
+  93          
+  94          /*******************************************************************************
+  95          * Function Name  : VN_Identity(float scalar, unsigned long Arows, unsigned long Acols, float *A)
+  96          * Description    : Create an zero matrix with the diagonal elements equal to
+  97          *                : the magnitude of scalar.
+  98          * Equation       : A = scalar * eye(Arows, Acols)                                        
+  99          * Input          : scalar -> desired magnitude of diagnonal terms
+ 100          *                : Arows -> number of rows for the resulting matrix A
+ 101          *                : Acols -> number of columns for the resulting matrix A 
+ 102          * Output         : A -> resulting diagonal matrix
+ 103          * Return         : None
+ 104          *******************************************************************************/
+ 105          void VN_Identity(float scalar, unsigned long Arows, unsigned long Acols, float **A){
+ 106   1        unsigned long i,j;
+ 107   1        
+ 108   1        for(i=0;i<Arows;i++){
+ 109   2          for(j=0;j<Acols;j++){
+ 110   3            if(i==j){
+ 111   4              A[i][j] = scalar;
+ 112   4            }else{
+ 113   4              A[i][j] = 0;
+ 114   4            }
+ 115   3          }
+ 116   2        }
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 3   
+
+ 117   1      }
+ 118          
+ 119          /*******************************************************************************
+ 120          * Function Name  : VN_MatAdd(float **A, float **B, unsigned long Arows, unsigned long Acols, float **C){
+ 121          * Description    : Compute the addition of matrix A and B.
+ 122          * Equation       : C = A + B                                        
+ 123          * Input          : A -> Matrix A with size of Arows x Acols.
+ 124          *                : B -> Matrix B with size of Arows x Acols.
+ 125          *                : Arows -> Number of rows in matrix A and B.
+ 126          *                : Acols -> Number of cols in matrix A and B. 
+ 127          * Output         : C -> Result of matrix addition with size of Arows x Acols.
+ 128          * Return         : None
+ 129          *******************************************************************************/
+ 130          void VN_MatAdd(float **A, float **B, unsigned long Arows, unsigned long Acols, float **C){
+ 131   1        unsigned long i,j;
+ 132   1        for(i=0;i<Arows;i++){
+ 133   2          for(j=0;j<Acols;j++){
+ 134   3            C[i][j] = A[i][j] + B[i][j];
+ 135   3          }
+ 136   2        }
+ 137   1      }
+ 138          
+ 139          /*******************************************************************************
+ 140          * Function Name  : VN_MatSub(float **A, float **B, unsigned long Arows, unsigned long Acols, float **C){
+ 141          * Description    : Compute the subtraction of matrix A and B.
+ 142          * Equation       : C = A - B                                        
+ 143          * Input          : A -> Matrix A with size of Arows x Acols.
+ 144          *                : B -> Matrix B with size of Arows x Acols.
+ 145          *                : Arows -> Number of rows in matrix A and B.
+ 146          *                : Acols -> Number of cols in matrix A and B. 
+ 147          * Output         : C -> Result of matrix subtraction with size of Arows x Acols.
+ 148          * Return         : None
+ 149          *******************************************************************************/
+ 150          void VN_MatSub(float **A, float **B, unsigned long Arows, unsigned long Acols, float **C){
+ 151   1        unsigned long i,j;
+ 152   1        for(i=0;i<Arows;i++){
+ 153   2          for(j=0;j<Acols;j++) C[i][j] = A[i][j] - B[i][j];
+ 154   2        }
+ 155   1      }
+ 156          
+ 157          /*******************************************************************************
+ 158          * Function Name  : VN_MatMult(float **A, float **B, unsigned long Arows, unsigned long Acols, unsigned lon
+             -g Bcols, float **C)
+ 159          * Description    : Compute the multplication of matrix A and B.
+ 160          * Equation       : C = A * B
+ 161          * Input          : A -> Matrix A with size of Arows x Acols
+ 162          *                : B -> Matrix B with size of Acols x Bcols
+ 163          *                : Arows -> Number of rows in matrix A
+ 164          *                : Acols -> Number of columns in matrix A
+ 165          *                : Bcols -> Number of columns in matrix B
+ 166          * Output         : C -> Result of the matrix multplication with size Arows x Bcols
+ 167          * Return         : None
+ 168          *******************************************************************************/
+ 169          void VN_MatMult(float **A, float **B, unsigned long Arows, unsigned long Acols, unsigned long Bcols, float
+             - **C){
+ 170   1        unsigned long i,j,k;
+ 171   1        float temp;
+ 172   1        for(i=0;i<Arows;i++){
+ 173   2          for(j=0;j<Bcols;j++){
+ 174   3            temp = 0;
+ 175   3            for(k=Acols; k--; ){
+ 176   4              temp += A[i][k]*B[k][j];
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 4   
+
+ 177   4            }
+ 178   3            C[i][j] = temp;
+ 179   3          }
+ 180   2        }
+ 181   1      }
+ 182          
+ 183          /*******************************************************************************
+ 184          * Function Name  : VN_MatMultMT(float **A, float **BT, unsigned long Arows, unsigned long Acols, unsigned 
+             -long Bcols, float **C)
+ 185          * Description    : Compute the multplication of matrix A with the transpose of matrix B.
+ 186          * Equation       : C = A * transpose(B)
+ 187          * Input          : A -> Matrix A with size of Arows x Acols
+ 188          *                : B -> Matrix B with size of Acols x Bcols
+ 189          *                : Arows -> Number of rows in matrix A
+ 190          *                : Acols -> Number of columns in matrix A
+ 191          *                : Bcols -> Number of columns in matrix B
+ 192          * Output         : C -> Result of the matrix multplication with size Arows x Bcols
+ 193          * Return         : None
+ 194          *******************************************************************************/
+ 195          void VN_MatMultMT(float **A, float **BT, unsigned long Arows, unsigned long Acols, unsigned long Brows, fl
+             -oat **C){
+ 196   1        unsigned long i,j,k;
+ 197   1        float temp;
+ 198   1        for(i=0;i<Arows;i++){
+ 199   2          for(j=0;j<Brows;j++){
+ 200   3            temp = 0;
+ 201   3            for(k=Acols; k--; ){
+ 202   4              temp += A[i][k]*BT[j][k];
+ 203   4            }
+ 204   3            C[i][j] = temp;
+ 205   3          }
+ 206   2        }
+ 207   1      }
+ 208          
+ 209          /*******************************************************************************
+ 210          * Function Name  : VN_MatScalarMult(double **A, double scalar, unsigned long Arows, unsigned long Acols, d
+             -ouble **C)
+ 211          * Description    : Compute the multplication of a scalar times a matrix.
+ 212          * Equation       : C = scalar * A                                        
+ 213          * Input          : scalar -> The scalar term
+ 214          *                : A -> The matrix with the size Arows x Acols
+ 215          *                : Arows -> The number of rows in the matrix A
+ 216          *                : Acols -> The number of columns in the matrix B
+ 217          * Output         : C -> The result of the operation scalar * A
+ 218          * Return         : None
+ 219          *******************************************************************************/
+ 220          void VN_MatScalarMult(double **A, double scalar, unsigned long Arows, unsigned long Acols, double **C){
+ 221   1        unsigned long i,j;
+ 222   1        for(i=0;i<Arows;i++){
+ 223   2          for(j=0;j<Acols;j++){
+ 224   3            C[i][j] = scalar*A[i][j];
+ 225   3          }
+ 226   2        }
+ 227   1      }
+ 228          
+ 229          /*******************************************************************************
+ 230          * Function Name  : VN_MatVecMult(float **A, float *B, unsigned long Arows, unsigned long Acols, float *C)
+ 231          * Description    : Compute the multiplication of matrix A with vector B.
+ 232          * Equation       : C = A * B                                        
+ 233          * Input          : A -> Matrix with size Arows x Acols
+ 234          *                : B -> Column vector with size Acols x 1
+ 235          *                : Arows -> Number of rows in matrix A
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 5   
+
+ 236          *                : Acols -> Number of columns in matrix A
+ 237          * Output         : C -> Matrix result with size Arows x Acols
+ 238          * Return         : None
+ 239          *******************************************************************************/
+ 240          void VN_MatVecMult(float **A, float *B, unsigned long Arows, unsigned long Acols, float *C){
+ 241   1        unsigned long i,k;
+ 242   1        for(i=0;i<Arows;i++){
+ 243   2          C[i] = 0;
+ 244   2          for(k=0;k<Acols;k++) C[i] += A[i][k]*B[k];
+ 245   2        }
+ 246   1      }
+ 247          
+ 248          /*******************************************************************************
+ 249          * Function Name  : VN_MatTVecMult(float **A, float *B, unsigned long Arows, unsigned long Acols, float *C)
+ 250          * Description    : Multiply the transpose of the matrix A by the vector B.
+ 251          * Equation       : C = transpose(A) * B                                        
+ 252          * Input          : A -> Matrix with size Arows x Acols
+ 253          *                : B -> Column vector with size Arows x 1
+ 254          *                : Arows -> Number of rows in matrix A
+ 255          *                : Acols -> Number of columns in matrix A
+ 256          * Output         : C -> Matrix result with size Acols x Arows
+ 257          * Return         : None
+ 258          *******************************************************************************/
+ 259          void VN_MatTVecMult(float **A, float *B, unsigned long Arows, unsigned long Acols, float *C){
+ 260   1        unsigned long i,k;
+ 261   1        for(i=0;i<Arows;i++){
+ 262   2          C[i] = 0;
+ 263   2          for(k=0;k<Acols;k++) C[i] += A[k][i]*B[k];
+ 264   2        }
+ 265   1      }
+ 266          
+ 267          /*******************************************************************************
+ 268          * Function Name  : VN_MatCopy(float **A, unsigned long nrows, unsigned long ncols, float **B)
+ 269          * Description    : Copy the values from one matrix to another.
+ 270          * Equation       : B = A                                        
+ 271          * Input          : A -> Matrix with size nrows x ncols
+ 272          *                : nrows -> number of rows in matrix A
+ 273          *                : ncols -> number of columns in matrix A
+ 274          * Output         : B -> Resulting matrix with size nrows x ncols
+ 275          * Return         : None
+ 276          *******************************************************************************/
+ 277          void VN_MatCopy(float **A, unsigned long nrows, unsigned long ncols, float **B){
+ 278   1        unsigned long i,j;
+ 279   1        for(i=0;i<nrows;i++){
+ 280   2          for(j=0;j<ncols;j++) B[i][j] = A[i][j];
+ 281   2        }
+ 282   1      }
+ 283          
+ 284          /*******************************************************************************
+ 285          * Function Name  : VN_MatInv(float **A, s32 n, float **B)
+ 286          * Description    : Compute the matrix inverse of A.
+ 287          * Equation       : B = inv(A)                                        
+ 288          * Input          : A -> Matrix with size n x n
+ 289          *                : n -> Number of rows and columns in matrix A
+ 290          * Output         : B -> Matrix result with size n x n
+ 291          * Return         : None
+ 292          *******************************************************************************/
+ 293          void VN_MatInv(float **A, signed long n, float **B)
+ 294          {
+ 295   1        int indxc[VN_INV_MAX_SIZE], indxr[VN_INV_MAX_SIZE], ipiv[VN_INV_MAX_SIZE];
+ 296   1        int i,icol,irow,j,k,l,ll;
+ 297   1        float big,dum,pivinv,temp;
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 6   
+
+ 298   1        
+ 299   1        irow = 0;
+ 300   1        icol = 0;
+ 301   1      
+ 302   1        VN_MatCopy(A,n,n,B);
+ 303   1      
+ 304   1        for (j=0;j<n;j++) ipiv[j]=0;
+ 305   1        for (i=0;i<n;i++){
+ 306   2            big=0.0;
+ 307   2            for (j=0;j<n;j++)
+ 308   2              if (ipiv[j] != 1)
+ 309   2                for (k=0;k<n;k++) {
+ 310   3                  if (ipiv[k] == 0) {
+ 311   4                    if (fabs(B[j][k]) >= big) {
+ 312   5                      big=(float)fabsf(B[j][k]);
+*** WARNING C206 IN LINE 312 OF ..\VN_math.c: 'fabsf': missing function-prototype
+*** ERROR C267 IN LINE 312 OF ..\VN_math.c: 'fabsf': requires ANSI-style prototype
+ 313   5                      irow=j;
+ 314   5                      icol=k;
+ 315   5                    }
+ 316   4                  }
+ 317   3                }
+ 318   2              ++(ipiv[icol]);
+*** ERROR C187 IN LINE 318 OF ..\VN_math.c: not an lvalue
+ 319   2              if (irow != icol) {
+ 320   3                for (l=0;l<n;l++) VN_SWAP(B[irow][l],B[icol][l])
+ 321   3              }
+ 322   2              indxr[i]=irow;
+ 323   2              indxc[i]=icol;
+ 324   2              pivinv=1.0f/B[icol][icol];
+ 325   2              B[icol][icol]=1.0;
+ 326   2              for (l=0;l<n;l++) B[icol][l] *= pivinv;
+ 327   2                for (ll=0;ll<n;ll++)
+ 328   2                  if (ll != icol) {
+ 329   3                    dum=B[ll][icol];
+ 330   3                    B[ll][icol]=0.0;
+ 331   3                    for (l=0;l<n;l++) B[ll][l] -= B[icol][l]*dum;
+ 332   3                  }
+ 333   2              }
+ 334   1              for (l=n-1;l>=0;l--) {
+ 335   2                if (indxr[l] != indxc[l])
+ 336   2                  for (k=0;k<n;k++)
+ 337   2                    VN_SWAP(B[k][indxr[l]],B[k][indxc[l]]);
+ 338   2              }
+ 339   1      }
+ 340          
+ 341          /*******************************************************************************
+ 342          * Function Name  : VN_SkewMatrix(float *V, float **A)
+ 343          * Description    : Compute the matrix cross product of vector V. This operation
+ 344          *                : converts a vector into a matrix that when multplied by
+ 345          *                : another vector would give the result of a cross product
+ 346          *                : operation between the two vectors.
+ 347          * Equation       : A = skew(V)  where A*b = cross(V,b)  if b is a vector same
+ 348          *                : size as V.                                        
+ 349          * Input          : V -> Vector of size 3x1 to perform operation on.
+ 350          * Output         : A -> Resulting matrix with size 3x3.
+ 351          * Return         : None
+ 352          *******************************************************************************/
+ 353          void VN_SkewMatrix(float *V, float **A){
+ 354   1        A[0][0] = 0;
+ 355   1        A[0][1] = -V[2];
+ 356   1        A[0][2] = V[1];
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 7   
+
+ 357   1        A[1][0] = V[2];
+ 358   1        A[1][1] = 0;
+ 359   1        A[1][2] = -V[0];
+ 360   1        A[2][0] = -V[1];
+ 361   1        A[2][1] = V[0];
+ 362   1        A[2][2] = 0;
+ 363   1      }
+ 364          
+ 365          /*******************************************************************************
+ 366          * Function Name  : VN_Transpose(float **A, unsigned long Arows, unsigned long Acols, float **B)
+ 367          * Description    : Calculate the transpose of matrix A.
+ 368          * Equation       : B = transpose(A)                                        
+ 369          * Input          : A -> Matrix with size Arows x Acols
+ 370          *                : Arows -> Number of rows in matrix A
+ 371          *                : Acols -> Number of columns in matrix A
+ 372          * Output         : B -> Resulting matrix with size Acols x Arows
+ 373          * Return         : None
+ 374          *******************************************************************************/
+ 375          void VN_Transpose(float **A, unsigned long Arows, unsigned long Acols, float **B){
+ 376   1        unsigned long i,j;
+ 377   1        for(i=0;i<Arows;i++){
+ 378   2          for(j=0;j<Acols;j++){
+ 379   3            B[j][i] = A[i][j];
+ 380   3          }
+ 381   2        }
+ 382   1      }
+ 383          
+ 384          /*******************************************************************************
+ 385          * Function Name  : VN_Norm(float *A, unsigned long m)
+ 386          * Description    : Compute the length of the given vector with size m x 1
+ 387          * Equation       : norm(A)                                        
+ 388          * Input          : A -> Vector to compute the length of with size m x 1
+ 389          *                : m -> Number of terms in the vector A.
+ 390          * Output         : None
+ 391          * Return         : The length of the given vector with size m x 1
+ 392          *******************************************************************************/
+ 393          float VN_Norm(float *A, unsigned long m){
+ 394   1        float nrm = 0;
+ 395   1        unsigned long i;
+ 396   1        for(i=0; i < m; i++){
+ 397   2          nrm += A[i]*A[i];
+ 398   2        }
+ 399   1        return sqrtf(nrm);  
+ 400   1      }
+ 401          
+ 402          /*******************************************************************************
+ 403          * Function Name  : VN_Normalize(float *V1, unsigned long m, float *V2)
+ 404          * Description    : Compute the unit normal vector with the direction given by
+ 405          *                : vector V1.
+ 406          * Equation       : V2 = V1 ./ norm(V1)                                        
+ 407          * Input          : V1 -> Vector with size m x 1
+ 408          *                : m -> Number of terms in the vector V1.
+ 409          * Output         : V2 -> Unit vector with the size of m x 1.
+ 410          * Return         : None
+ 411          *******************************************************************************/
+ 412          void VN_Normalize(float *V1, unsigned long m, float *V2){
+ 413   1        float nrm = VN_Norm(V1, m);
+ 414   1        unsigned long i;
+ 415   1        for(i=0; i < m; i++){
+ 416   2          V2[i] = V1[i] / nrm;
+ 417   2        }
+ 418   1      }
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 8   
+
+ 419          
+ 420          /*******************************************************************************
+ 421          * Function Name  : VN_TriU2TriL(float **A, unsigned long rows)
+ 422          * Description    : Copys the terms in the upper right triangular portion of
+ 423          *                : matrix A into the lower left portion of A such that A becomes
+ 424          *                : a symmetric matrix.
+ 425          * Equation       : B = triu(A) + triu(A)' - diag(diag(A))                                         
+ 426          * Input          : A -> Square matrix with size rows x rows
+ 427          *                : rows -> Number of rows in square matrix B
+ 428          * Output         : A -> Square symmetric matrix A
+ 429          * Return         : None
+ 430          *******************************************************************************/
+ 431          void VN_TriU2TriL(float **A, unsigned long rows){
+ 432   1        unsigned long i,j;
+ 433   1        for(i=0;i<rows;i++){
+ 434   2          for(j=i+1;j<rows;j++){
+ 435   3            A[j][i] = A[i][j];
+ 436   3          }
+ 437   2        }
+ 438   1      }
+ 439          
+ 440          /*******************************************************************************
+ 441          * Function Name  : VN_quat2DCM(float *q, float **A)
+ 442          * Description    : Convert a quaternion into to a directional cosine matrix.
+ 443          * Equation       : A = quat2dcm(q)                                        
+ 444          * Input          : q -> Quaternion attitude
+ 445          * Output         : A -> Directional cosine matrix (3x3)
+ 446          * Return         : None
+ 447          *******************************************************************************/
+ 448          void VN_Quat2DCM(float *q, float **A){
+ 449   1      
+ 450   1        /* Temporary variables */
+ 451   1        float t[12];
+ 452   1        
+ 453   1        t[0] = q[0]*q[0];
+ 454   1        t[1] = q[1]*q[1];
+ 455   1        t[2] = q[2]*q[2];
+ 456   1        t[3] = q[3]*q[3];
+ 457   1        t[4] = q[0]*q[1]*2.0;
+ 458   1        t[5] = q[0]*q[2]*2.0;
+ 459   1        t[6] = q[0]*q[3]*2.0;
+ 460   1        t[7] = q[1]*q[2]*2.0;
+ 461   1        t[8] = q[1]*q[3]*2.0;
+ 462   1        t[9] = q[2]*q[3]*2.0;
+ 463   1        t[10]= t[0]-t[1];
+ 464   1        t[11]= t[3]-t[2];
+ 465   1        A[0][0] =  t[10]+t[11];
+ 466   1        A[1][1] = -t[10]+t[11];
+ 467   1        A[2][2] = -t[0]-t[1]+t[2]+t[3];
+ 468   1        A[0][1] = t[4]+t[9];
+ 469   1        A[1][0] = t[4]-t[9];
+ 470   1        A[1][2] =  t[6]+t[7];
+ 471   1        A[2][1] = -t[6]+t[7];
+ 472   1        A[0][2] = t[5]-t[8];
+ 473   1        A[2][0] = t[5]+t[8];
+ 474   1      }
+ 475          
+ 476          /*******************************************************************************
+ 477          * Function Name  : VN_YPR2DCM(float *YPR, float **A)
+ 478          * Description    : Convert the given yaw, pitch, and roll into a directional
+ 479          *                : cosine matrix.
+ 480          * Equation       : A = ANGLE2DCM(YPR[0], YPR[1], YPR[2], 'ZYX')                                         
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 9   
+
+ 481          * Input          : YPR -> Yaw, pitch, roll as a 3x1 vector
+ 482          * Output         : A -> Directional cosine matrix
+ 483          * Return         : None
+ 484          *******************************************************************************/
+ 485          void VN_YPR2DCM(float *YPR, float **A){
+ 486   1      
+ 487   1        /* Temporary variables */
+ 488   1        float t[12];
+ 489   1        
+ 490   1        t[0] = sinf(YPR[0]);
+ 491   1        t[1] = cosf(YPR[0]);
+ 492   1        t[2] = sinf(YPR[1]);
+ 493   1        t[3] = cosf(YPR[1]);
+ 494   1        t[4] = sinf(YPR[2]);
+ 495   1        t[5] = cosf(YPR[2]);
+ 496   1        t[6] = t[4]*t[2];
+ 497   1        t[7] = t[5]*t[2];
+ 498   1        A[0][0] = t[3]*t[1];
+ 499   1        A[0][1] = t[3]*t[0];
+ 500   1        A[0][2] = -t[2];
+ 501   1        A[1][0] = t[6]*t[1]-t[5]*t[0];
+ 502   1        A[1][1] = t[6]*t[0]+t[5]*t[1];
+ 503   1        A[1][2] = t[4]*t[3];
+ 504   1        A[2][0] = t[7]*t[1]+t[4]*t[0];
+ 505   1        A[2][1] = t[7]*t[0]-t[4]*t[1];
+ 506   1        A[2][2] = t[5]*t[3];
+ 507   1      }
+ 508          
+ 509          /*******************************************************************************
+ 510          * Function Name  : VN_MatZeros(float **A, unsigned long Arows, unsigned long Acols)
+ 511          * Description    : Sets all elements of matrix A equal to zero.
+ 512          * Equation       : A = zeros(Arows, Acols)                                        
+ 513          * Input          : A -> Matrix with size of Arows x Acols
+ 514          *                : Arows -> Number of rows in matrix A
+ 515          *                : Acols -> Number of columns in matrix A
+ 516          * Output         : Matrix A with all elements set to zero
+ 517          * Return         : None
+ 518          *******************************************************************************/
+ 519          void VN_MatZeros(float **A, unsigned long Arows, unsigned long Acols)
+ 520          {
+ 521   1        unsigned long i,j;
+ 522   1        
+ 523   1        for(i=0;i<Arows;i++){
+ 524   2          for(j=0;j<Acols;j++){
+ 525   3            A[i][j] = 0.0;
+ 526   3          }
+ 527   2        }
+ 528   1      }
+ 529          
+ 530          /*******************************************************************************
+ 531          * Function Name  : VN_Quat2Euler121(float *q, float *Euler121)
+ 532          * Description    : Convert a quaternion attitude representation to an Euler
+ 533          *                : angle 1,2,1 set.
+ 534          * Equation       : Euler121 = quat2angle(q, 'XYX')                                         
+ 535          * Input          : q -> Quaternion 4x1 vector
+ 536          * Output         : Euler angles
+ 537          * Return         : None
+ 538          *******************************************************************************/
+ 539          void VN_Quat2Euler121(float *q, float *Euler121){
+ 540   1      
+ 541   1      float t1, t2;
+ 542   1      
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 10  
+
+ 543   1      t1 = atan2f(q[2],q[1]);
+ 544   1      t2 = atan2f(q[0],q[3]);
+ 545   1      
+ 546   1      Euler121[0] = t1+t2;
+ 547   1      Euler121[1] = 2*acosf(sqrtf(q[3]*q[3]+q[0]*q[0]));
+ 548   1      Euler121[2] = t2-t1;
+ 549   1      }
+ 550          
+ 551          /*******************************************************************************
+ 552          * Function Name  : VN_Quat2Euler123(float *q, float *Euler123)
+ 553          * Description    : Convert a quaternion attitude representation to an Euler
+ 554          *                : angle 1,2,3 set.                                         
+ 555          * Equation       : Euler123 = quat2angle(q, 'XYZ')                                         
+ 556          * Input          : q -> Quaternion 4x1 vector
+ 557          * Output         : Euler angles
+ 558          * Return         : None
+ 559          *******************************************************************************/
+ 560          void VN_Quat2Euler123(float *q, float *Euler123){
+ 561   1      
+ 562   1      float q0, q1, q2, q3;
+ 563   1      
+ 564   1      q0 = q[3];
+ 565   1      q1 = q[0];
+ 566   1      q2 = q[1];
+ 567   1      q3 = q[2];
+ 568   1      
+ 569   1      Euler123[0] = atan2f(-2*(q2*q3-q0*q1),q0*q0-q1*q1-q2*q2+q3*q3);
+ 570   1      Euler123[1] = asinf(2*(q1*q3 + q0*q2));
+ 571   1      Euler123[2]= atan2f(-2*(q1*q2-q0*q3),q0*q0+q1*q1-q2*q2-q3*q3);
+ 572   1      }
+ 573          
+ 574          /*******************************************************************************
+ 575          * Function Name  : VN_Quat2Euler131(float *q, float *Euler131)
+ 576          * Description    : Convert a quaternion attitude representation to an Euler
+ 577          *                : angle 1,3,1 set.                                         
+ 578          * Equation       : Euler131 = quat2angle(q, 'XZX')                                         
+ 579          * Input          : q -> Quaternion 4x1 vector
+ 580          * Output         : Euler angles
+ 581          * Return         : None
+ 582          *******************************************************************************/
+ 583          void VN_Quat2Euler131(float *q, float *Euler131){
+ 584   1      
+ 585   1      float t1, t2;
+ 586   1      
+ 587   1      t1 = atan2f(q[1],q[2]);
+ 588   1      t2 = atan2f(q[0],q[3]);
+ 589   1      
+ 590   1      Euler131[0] = t2-t1;
+ 591   1      Euler131[1] = 2*acosf(sqrtf(q[3]*q[3]+q[0]*q[0]));
+ 592   1      Euler131[2] = t2+t1;
+ 593   1      }
+ 594          
+ 595          /*******************************************************************************
+ 596          * Function Name  : VN_Quat2Euler132(float *q, float *Euler132)
+ 597          * Description    : Convert a quaternion attitude representation to an Euler
+ 598          *                : angle 1,3,2 set.                                         
+ 599          * Equation       : Euler132 = quat2angle(q, 'XZY')                                         
+ 600          * Input          : q -> Quaternion 4x1 vector
+ 601          * Output         : Euler angles
+ 602          * Return         : None
+ 603          *******************************************************************************/
+ 604          void VN_Quat2Euler132(float *q, float *Euler132){
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 11  
+
+ 605   1      
+ 606   1      float q0, q1, q2, q3;
+ 607   1      
+ 608   1      q0 = q[3];
+ 609   1      q1 = q[0];
+ 610   1      q2 = q[1];
+ 611   1      q3 = q[2];
+ 612   1      
+ 613   1      Euler132[0] = atan2f(2*(q2*q3+q0*q1),q0*q0-q1*q1+q2*q2-q3*q3);
+ 614   1      Euler132[1] = asinf(-2*(q1*q2-q0*q3));
+ 615   1      Euler132[2]= atan2f(2*(q1*q3 + q0*q2),q0*q0+q1*q1-q2*q2-q3*q3);
+ 616   1      }
+ 617          
+ 618          /*******************************************************************************
+ 619          * Function Name  : VN_Quat2Euler212(float *q, float *Euler212)
+ 620          * Description    : Convert a quaternion attitude representation to an Euler
+ 621          *                : angle 2,1,2 set.                                         
+ 622          * Equation       : Euler212 = quat2angle(q, 'YXY')                                         
+ 623          * Input          : q -> Quaternion 4x1 vector
+ 624          * Output         : Euler angles
+ 625          * Return         : None
+ 626          *******************************************************************************/
+ 627          void VN_Quat2Euler212(float *q, float *Euler212){
+ 628   1      
+ 629   1      float t1, t2;
+ 630   1      
+ 631   1      t1 = atan2f(q[2],q[0]);
+ 632   1      t2 = atan2f(q[1],q[3]);
+ 633   1      
+ 634   1      Euler212[0] = t2-t1;
+ 635   1      Euler212[1] = 2*acosf(sqrtf(q[3]*q[3]+q[1]*q[1]));
+ 636   1      Euler212[2] = t2+t1;
+ 637   1      }
+ 638          
+ 639          /*******************************************************************************
+ 640          * Function Name  : VN_Quat2Euler213(float *q, float *Euler213)
+ 641          * Description    : Convert a quaternion attitude representation to an Euler
+ 642          *                : angle 2,1,3 set.                                         
+ 643          * Equation       : Euler213 = quat2angle(q, 'YXZ')                                         
+ 644          * Input          : q -> Quaternion 4x1 vector
+ 645          * Output         : Euler angles
+ 646          * Return         : None
+ 647          *******************************************************************************/
+ 648          void VN_Quat2Euler213(float *q, float *Euler213){
+ 649   1      
+ 650   1      float q0, q1, q2, q3;
+ 651   1      
+ 652   1      q0 = q[3];
+ 653   1      q1 = q[0];
+ 654   1      q2 = q[1];
+ 655   1      q3 = q[2];
+ 656   1      
+ 657   1      Euler213[0] = atan2f(2*(q1*q3 + q0*q2),q0*q0-q1*q1-q2*q2+q3*q3);
+ 658   1      Euler213[1] = asinf(-2*(q2*q3-q0*q1));
+ 659   1      Euler213[2]= atan2f(2*(q1*q2+q0*q3),q0*q0-q1*q1+q2*q2-q3*q3);
+ 660   1      }
+ 661          
+ 662          /*******************************************************************************
+ 663          * Function Name  : VN_Quat2Euler231(float *q, float *Euler231)
+ 664          * Description    : Convert a quaternion attitude representation to an Euler
+ 665          *                : angle 2,3,1 set.                                         
+ 666          * Equation       : Euler231 = quat2angle(q, 'YZX')                                         
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 12  
+
+ 667          * Input          : q -> Quaternion 4x1 vector
+ 668          * Output         : Euler angles
+ 669          * Return         : None
+ 670          *******************************************************************************/
+ 671          void VN_Quat2Euler231(float *q, float *Euler231){
+ 672   1      
+ 673   1      float q0, q1, q2, q3;
+ 674   1      
+ 675   1      q0 = q[3];
+ 676   1      q1 = q[0];
+ 677   1      q2 = q[1];
+ 678   1      q3 = q[2];
+ 679   1      
+ 680   1      Euler231[0] = atan2f(-2*(q1*q3-q0*q2), q0*q0+q1*q1-q2*q2-q3*q3);
+ 681   1      Euler231[1] = asinf(2*(q1*q2+q0*q3));
+ 682   1      Euler231[2]= atan2f(-2*(q2*q3-q0*q1),q0*q0-q1*q1+q2*q2-q3*q3);
+ 683   1      }
+ 684          
+ 685          /*******************************************************************************
+ 686          * Function Name  : VN_Quat2Euler232(float *q, float *Euler232)
+ 687          * Description    : Convert a quaternion attitude representation to an Euler
+ 688          *                : angle 2,3,2 set.                                         
+ 689          * Equation       : Euler232 = quat2angle(q, 'YZY')                                         
+ 690          * Input          : q -> Quaternion 4x1 vector
+ 691          * Output         : Euler angles
+ 692          * Return         : None
+ 693          *******************************************************************************/
+ 694          void VN_Quat2Euler232(float *q, float *Euler232){
+ 695   1      
+ 696   1      float t1, t2;
+ 697   1      
+ 698   1      t1 = atan2f(q[0],q[2]);
+ 699   1      t2 = atan2f(q[1],q[3]);
+ 700   1      
+ 701   1      Euler232[0] = t1+t2;
+ 702   1      Euler232[1] = 2*acosf(sqrtf(q[3]*q[3]+q[1]*q[1]));
+ 703   1      Euler232[2] = t2-t1;
+ 704   1      }
+ 705          
+ 706          /*******************************************************************************
+ 707          * Function Name  : VN_Quat2Euler312(float *q, float *Euler312)
+ 708          * Description    : Convert a quaternion attitude representation to an Euler
+ 709          *                : angle 3,1,2 set.                                         
+ 710          * Equation       : Euler312 = quat2angle(q, 'ZXY')                                         
+ 711          * Input          : q -> Quaternion 4x1 vector
+ 712          * Output         : Euler angles
+ 713          * Return         : None
+ 714          *******************************************************************************/
+ 715          void VN_Quat2Euler312(float *q, float *Euler312){
+ 716   1      
+ 717   1      float q0, q1, q2, q3;
+ 718   1      
+ 719   1      q0 = q[3];
+ 720   1      q1 = q[0];
+ 721   1      q2 = q[1];
+ 722   1      q3 = q[2];
+ 723   1      
+ 724   1      Euler312[0] = atan2f(-2*(q1*q2-q0*q3),q0*q0-q1*q1+q2*q2-q3*q3);
+ 725   1      Euler312[1] = asinf(2*(q2*q3+q0*q1));
+ 726   1      Euler312[2]= atan2f(-2*(q1*q3-q0*q2),q0*q0-q1*q1-q2*q2+q3*q3);
+ 727   1      }
+ 728          
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 13  
+
+ 729          /*******************************************************************************
+ 730          * Function Name  : VN_Quat2Euler313(float *q, float *Euler313)
+ 731          * Description    : Convert a quaternion attitude representation to an Euler
+ 732          *                : angle 3,1,3 set.                                         
+ 733          * Equation       : Euler313 = quat2angle(q, 'ZXZ')                                         
+ 734          * Input          : q -> Quaternion 4x1 vector
+ 735          * Output         : Euler angles
+ 736          * Return         : None
+ 737          *******************************************************************************/
+ 738          void VN_Quat2Euler313(float *q, float *Euler313){
+ 739   1      
+ 740   1      float t1, t2;
+ 741   1      
+ 742   1      t1 = atan2f(q[1],q[0]);
+ 743   1      t2 = atan2f(q[2],q[3]);
+ 744   1      
+ 745   1      Euler313[0] = t1+t2;
+ 746   1      Euler313[1] = 2*acosf(sqrtf(q[3]*q[3]+q[2]*q[2]));
+ 747   1      Euler313[2] = t2-t1;
+ 748   1      }
+ 749          
+ 750          /*******************************************************************************
+ 751          * Function Name  : VN_Quat2Euler321(float *q, float *Euler321)
+ 752          * Description    : Convert a quaternion attitude representation to an Euler
+ 753          *                : angle 3,2,1 set.                                         
+ 754          * Equation       : Euler321 = quat2angle(q, 'ZYX')                                         
+ 755          * Input          : q -> Quaternion 4x1 vector
+ 756          * Output         : Euler angles
+ 757          * Return         : None
+ 758          *******************************************************************************/
+ 759          void VN_Quat2Euler321(float *q, float *Euler321){
+ 760   1      
+ 761   1      float q0, q1, q2, q3;
+ 762   1      
+ 763   1      q0 = q[3];
+ 764   1      q1 = q[0];
+ 765   1      q2 = q[1];
+ 766   1      q3 = q[2];
+ 767   1      
+ 768   1      Euler321[0] = atan2f(2*(q1*q2+q0*q3),q0*q0+q1*q1-q2*q2-q3*q3);
+ 769   1      Euler321[1] = asinf(-2*(q1*q3-q0*q2));
+ 770   1      Euler321[2]= atan2f(2*(q2*q3+q0*q1),q0*q0-q1*q1-q2*q2+q3*q3);
+ 771   1      }
+ 772          
+ 773          /*******************************************************************************
+ 774          * Function Name  : VN_Quat2Euler323(float *q, float *Euler323)
+ 775          * Description    : Convert a quaternion attitude representation to an Euler
+ 776          *                : angle 3,2,3 set.                                         
+ 777          * Equation       : Euler323 = quat2angle(q, 'ZYZ')                                         
+ 778          * Input          : q -> Quaternion 4x1 vector
+ 779          * Output         : Euler angles
+ 780          * Return         : None
+ 781          *******************************************************************************/
+ 782          void VN_Quat2Euler323(float *q, float *Euler323){
+ 783   1      
+ 784   1      float t1, t2;
+ 785   1      
+ 786   1      t1 = atan2f(q[0],q[1]);
+ 787   1      t2 = atan2f(q[2],q[3]);
+ 788   1      
+ 789   1      Euler323[0] = t2-t1;
+ 790   1      Euler323[1] = 2*acosf(sqrtf(q[3]*q[3]+q[2]*q[2]));
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 14  
+
+ 791   1      Euler323[2] = t2+t1;
+ 792   1      }
+ 793          
+ 794          /*******************************************************************************
+ 795          * Function Name  : VN_Quat2Gibbs(float *q, float *Gibb)
+ 796          * Description    : Convert a quaternion attitude representation to the Gibbs
+ 797          *                : angle representation.                                         
+ 798          * Input          : q -> Quaternion 4x1 vector
+ 799          * Output         : Gibb -> Gibbs vector
+ 800          * Return         : None
+ 801          *******************************************************************************/
+ 802          void VN_Quat2Gibbs(float *q, float *Gibb){
+ 803   1      Gibb[0] = q[0]/q[3];
+ 804   1      Gibb[1] = q[1]/q[3];
+ 805   1      Gibb[2] = q[2]/q[3];
+ 806   1      }
+ 807          
+ 808          /*******************************************************************************
+ 809          * Function Name  : VN_Quat2MRP(float *q, float *MRP)
+ 810          * Description    : Convert a quaternion attitude representation to an Modified
+ 811          *                : Rodrigues Parameters representation.                                         
+ 812          * Input          : q -> Quaternion 4x1 vector
+ 813          * Output         : MRP -> Modified Rodrigues Parameters
+ 814          * Return         : None
+ 815          *******************************************************************************/
+ 816          void VN_Quat2MRP(float *q, float *MRP){
+ 817   1      MRP[0] = q[0]/(1+q[3]);
+ 818   1      MRP[1] = q[1]/(1+q[3]);
+ 819   1      MRP[2] = q[2]/(1+q[3]);
+ 820   1      }
+ 821          
+ 822          /*******************************************************************************
+ 823          * Function Name  : VN_Quat2PRV(float *q, float *PRV)
+ 824          * Description    : Convert a quaternion attitude representation to the principal
+ 825          *                : rotatin vector.                                         
+ 826          * Input          : q -> Quaternion 4x1 vector
+ 827          * Output         : PRV -> Principal rotation vector
+ 828          * Return         : None
+ 829          *******************************************************************************/
+ 830          void VN_Quat2PRV(float *q, float *PRV){
+ 831   1      float p, sp;
+ 832   1      p = 2*acosf(q[3]);
+ 833   1      sp = sinf(p/2);
+ 834   1      PRV[0] = q[0]/sp*p;
+ 835   1      PRV[1] = q[1]/sp*p;
+ 836   1      PRV[2] = q[2]/sp*p;
+ 837   1      }
+ 838          
+ 839          /*******************************************************************************
+ 840          * Function Name  : VN_AddQuat(float *q1, float *q2, float *q3)
+ 841          * Description    : VN_AddQuat provides the quaternion which corresponds to
+ 842          *                  performing two successive rotations from q1 and q2.
+ 843          * Input          : q1 -> First quaternion
+ 844          *                : q2 -> Second quaternion
+ 845          * Output         : q3 -> Combined sucessive rotation of q1 and q2
+ 846          * Return         : None
+ 847          *******************************************************************************/
+ 848          void VN_AddQuat(float *q1, float *q2, float *q3){
+ 849   1      q3[3] = q2[3]*q1[3]-q2[0]*q1[0]-q2[1]*q1[1]-q2[2]*q1[2];
+ 850   1      q3[0] = q2[0]*q1[3]+q2[3]*q1[0]+q2[2]*q1[1]-q2[1]*q1[2];
+ 851   1      q3[1] = q2[1]*q1[3]-q2[2]*q1[0]+q2[3]*q1[1]+q2[0]*q1[2];
+ 852   1      q3[2] = q2[2]*q1[3]+q2[1]*q1[0]-q2[0]*q1[1]+q2[3]*q1[2];
+C51 COMPILER V9.05   VN_MATH                                                               06/03/2012 17:04:54 PAGE 15  
+
+ 853   1      }
+ 854          
+ 855          /*******************************************************************************
+ 856          * Function Name  : VN_SubQuat(float *q1, float *q2, float *q3)
+ 857          * Description    : VN_SubQuat provides the quaternion which cooresponds to
+ 858          *                  the relative rotation from q2 to q1.                                    
+ 859          * Input          : q1 -> First quaternion
+ 860          *                : q2 -> Second quaternion
+ 861          * Output         : q3 -> Relative rotation from q2 to q1
+ 862          * Return         : None
+ 863          *******************************************************************************/
+ 864          void VN_SubQuat(float *q1, float *q2, float *q3){
+ 865   1      q3[3] = q2[3]*q1[3]+q2[0]*q1[0]+q2[1]*q1[1]+q2[2]*q1[2];
+ 866   1      q3[0] = -q2[0]*q1[3]+q2[3]*q1[0]+q2[2]*q1[1]-q2[1]*q1[2];
+ 867   1      q3[1] = -q2[1]*q1[3]-q2[2]*q1[0]+q2[3]*q1[1]+q2[0]*q1[2];
+ 868   1      q3[2] = -q2[2]*q1[3]+q2[1]*q1[0]-q2[0]*q1[1]+q2[3]*q1[2];
+ 869   1      }
+ 870          
+ 871          /*******************************************************************************
+ 872          * Function Name  : VN_QuatKinematicDiffEq(float *q, float *rates, float *q_dot)
+ 873          * Description    : Computes the time rate of change of the quaternion paramters
+ 874          *                  as a function of the angular rates. You can use this function
+ 875          *                  if you need to determine how the quaternion parameters are
+ 876          *                  instantaniously changing as a function of time.                                        
+ 877          * Input          : q -> Current attitude quaternion
+ 878          *                  rates -> angular rates [rad/s]
+ 879          * Output         : q_dot -> derivative of q
+ 880          * Return         : None
+ 881          *******************************************************************************/
+ 882          void VN_QuatKinematicDiffEq(float *q, float *rates, float *q_dot){
+ 883   1      q_dot[0] = 0.5f * ( q[3]*rates[0]-q[2]*rates[1]+q[1]*rates[2]);
+ 884   1      q_dot[1] = 0.5f * ( q[2]*rates[0]+q[3]*rates[1]-q[0]*rates[2]);
+ 885   1      q_dot[2] = 0.5f * (-q[1]*rates[0]+q[0]*rates[1]+q[3]*rates[2]);
+ 886   1      q_dot[3] = 0.5f * (-q[0]*rates[0]-q[1]*rates[1]-q[2]*rates[2]);
+ 887   1      }
+ 888          
+ 889          /*******************************************************************************
+ 890          * Function Name  : VN_YPRKinematicDiffEq(float *YPR, float *rates, float *YPR_dot)
+ 891          * Description    : Computes the time rate of change of the 321 Euler angles
+ 892          *                  (yaw, pitch, roll) as a function of the angular rates. You
+ 893          *                  can use this function if you need to determine how the Euler
+ 894          *                  angles are instantaniously changing as a function of time.                             
+             -           
+ 895          * Input          : YPR -> Yaw, Pitch, Roll angles [rad]
+ 896          *                  rates -> angular rates [rad/s]
+ 897          * Output         : YPR_dot -> rate of change of yaw, pitch, roll [rad/s]
+ 898          * Return         : None
+ 899          *******************************************************************************/
+ 900          void VN_YPRKinematicDiffEq(float *YPR, float *rates, float *YPR_dot){
+ 901   1      YPR_dot[0] =          (sin(YPR[2])/cos(YPR[1]))*rates[1] + (cos(YPR[2])/cos(YPR[1]))*rates[2];
+ 902   1      YPR_dot[1] =                        cos(YPR[2])*rates[1] -               sin(YPR[2])*rates[2];
+ 903   1      YPR_dot[2] = rates[0] + sin(YPR[2])*tan(YPR[1])*rates[1] +   cos(YPR[2])*tan(YPR[1])*rates[2];
+ 904   1      }
+ 905          
+ 906          
+ 907          
+ 908          
+ 909          
+ 910          
+
+C51 COMPILATION COMPLETE.  2 WARNING(S),  2 ERROR(S)

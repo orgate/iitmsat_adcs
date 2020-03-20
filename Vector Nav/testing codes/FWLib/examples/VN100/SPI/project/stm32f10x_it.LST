@@ -1,0 +1,790 @@
+C51 COMPILER V9.05   STM32F10X_IT                                                          05/30/2012 19:29:54 PAGE 1   
+
+
+C51 COMPILER V9.05, COMPILATION OF MODULE STM32F10X_IT
+OBJECT MODULE PLACED IN .\stm32f10x_it.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\stm32f10x_it.c DEBUG OBJECTEXTEND OBJECT(.\stm32f10x_it.obj)
+
+line level    source
+
+   1          /******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
+   2          * File Name          : stm32f10x_it.c
+   3          * Author             : MCD Application Team
+   4          * Version            : V2.0.3
+   5          * Date               : 09/22/2008
+   6          * Description        : Main Interrupt Service Routines.
+   7          *                      This file provides template for all exceptions handler
+   8          *                      and peripherals interrupt service routine.
+   9          ********************************************************************************
+  10          * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  11          * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
+  12          * AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
+  13          * INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
+  14          * CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
+  15          * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  16          *******************************************************************************/
+  17          
+  18          /* Includes ------------------------------------------------------------------*/
+  19          #include "stm32f10x_it.h"
+*** WARNING C318 IN LINE 21 OF ..\stm32f10x_it.h: can't open file 'stm32f10x_lib.h'
+  20          
+  21          /* Private typedef -----------------------------------------------------------*/
+  22          /* Private define ------------------------------------------------------------*/
+  23          /* Private macro -------------------------------------------------------------*/
+  24          /* Private variables ---------------------------------------------------------*/
+  25          /* Private function prototypes -----------------------------------------------*/
+  26          /* Private functions ---------------------------------------------------------*/
+  27          
+  28          /*******************************************************************************
+  29          * Function Name  : NMIException
+  30          * Description    : This function handles NMI exception.
+  31          * Input          : None
+  32          * Output         : None
+  33          * Return         : None
+  34          *******************************************************************************/
+  35          void NMIException(void)
+  36          {}
+  37          
+  38          /*******************************************************************************
+  39          * Function Name  : HardFaultException
+  40          * Description    : This function handles Hard Fault exception.
+  41          * Input          : None
+  42          * Output         : None
+  43          * Return         : None
+  44          *******************************************************************************/
+  45          void HardFaultException(void)
+  46          {
+  47   1        /* Go to infinite loop when Hard Fault exception occurs */
+  48   1        while (1)
+  49   1        {}
+  50   1      }
+  51          
+  52          /*******************************************************************************
+  53          * Function Name  : MemManageException
+  54          * Description    : This function handles Memory Manage exception.
+C51 COMPILER V9.05   STM32F10X_IT                                                          05/30/2012 19:29:54 PAGE 2   
+
+  55          * Input          : None
+  56          * Output         : None
+  57          * Return         : None
+  58          *******************************************************************************/
+  59          void MemManageException(void)
+  60          {
+  61   1        /* Go to infinite loop when Memory Manage exception occurs */
+  62   1        while (1)
+  63   1        {}
+  64   1      }
+  65          
+  66          /*******************************************************************************
+  67          * Function Name  : BusFaultException
+  68          * Description    : This function handles Bus Fault exception.
+  69          * Input          : None
+  70          * Output         : None
+  71          * Return         : None
+  72          *******************************************************************************/
+  73          void BusFaultException(void)
+  74          {
+  75   1        /* Go to infinite loop when Bus Fault exception occurs */
+  76   1        while (1)
+  77   1        {}
+  78   1      }
+  79          
+  80          /*******************************************************************************
+  81          * Function Name  : UsageFaultException
+  82          * Description    : This function handles Usage Fault exception.
+  83          * Input          : None
+  84          * Output         : None
+  85          * Return         : None
+  86          *******************************************************************************/
+  87          void UsageFaultException(void)
+  88          {
+  89   1        /* Go to infinite loop when Usage Fault exception occurs */
+  90   1        while (1)
+  91   1        {}
+  92   1      }
+  93          
+  94          /*******************************************************************************
+  95          * Function Name  : DebugMonitor
+  96          * Description    : This function handles Debug Monitor exception.
+  97          * Input          : None
+  98          * Output         : None
+  99          * Return         : None
+ 100          *******************************************************************************/
+ 101          void DebugMonitor(void)
+ 102          {}
+ 103          
+ 104          /*******************************************************************************
+ 105          * Function Name  : SVCHandler
+ 106          * Description    : This function handles SVCall exception.
+ 107          * Input          : None
+ 108          * Output         : None
+ 109          * Return         : None
+ 110          *******************************************************************************/
+ 111          void SVCHandler(void)
+ 112          {}
+ 113          
+ 114          /*******************************************************************************
+ 115          * Function Name  : PendSVC
+ 116          * Description    : This function handles PendSVC exception.
+C51 COMPILER V9.05   STM32F10X_IT                                                          05/30/2012 19:29:54 PAGE 3   
+
+ 117          * Input          : None
+ 118          * Output         : None
+ 119          * Return         : None
+ 120          *******************************************************************************/
+ 121          void PendSVC(void)
+ 122          {}
+ 123          
+ 124          /*******************************************************************************
+ 125          * Function Name  : SysTickHandler
+ 126          * Description    : This function handles SysTick Handler.
+ 127          * Input          : None
+ 128          * Output         : None
+ 129          * Return         : None
+ 130          *******************************************************************************/
+ 131          /*
+ 132          void SysTickHandler(void)
+ 133          {}
+ 134          */
+ 135          /*******************************************************************************
+ 136          * Function Name  : WWDG_IRQHandler
+ 137          * Description    : This function handles WWDG interrupt request.
+ 138          * Input          : None
+ 139          * Output         : None
+ 140          * Return         : None
+ 141          *******************************************************************************/
+ 142          void WWDG_IRQHandler(void)
+ 143          {}
+ 144          
+ 145          /*******************************************************************************
+ 146          * Function Name  : PVD_IRQHandler
+ 147          * Description    : This function handles PVD interrupt request.
+ 148          * Input          : None
+ 149          * Output         : None
+ 150          * Return         : None
+ 151          *******************************************************************************/
+ 152          void PVD_IRQHandler(void)
+ 153          {}
+ 154          
+ 155          /*******************************************************************************
+ 156          * Function Name  : TAMPER_IRQHandler
+ 157          * Description    : This function handles Tamper interrupt request.
+ 158          * Input          : None
+ 159          * Output         : None
+ 160          * Return         : None
+ 161          *******************************************************************************/
+ 162          void TAMPER_IRQHandler(void)
+ 163          {}
+ 164          
+ 165          /*******************************************************************************
+ 166          * Function Name  : RTC_IRQHandler
+ 167          * Description    : This function handles RTC global interrupt request.
+ 168          * Input          : None
+ 169          * Output         : None
+ 170          * Return         : None
+ 171          *******************************************************************************/
+ 172          void RTC_IRQHandler(void)
+ 173          {}
+ 174          
+ 175          /*******************************************************************************
+ 176          * Function Name  : FLASH_IRQHandler
+ 177          * Description    : This function handles Flash interrupt request.
+ 178          * Input          : None
+C51 COMPILER V9.05   STM32F10X_IT                                                          05/30/2012 19:29:54 PAGE 4   
+
+ 179          * Output         : None
+ 180          * Return         : None
+ 181          *******************************************************************************/
+ 182          void FLASH_IRQHandler(void)
+ 183          {}
+ 184          
+ 185          /*******************************************************************************
+ 186          * Function Name  : RCC_IRQHandler
+ 187          * Description    : This function handles RCC interrupt request.
+ 188          * Input          : None
+ 189          * Output         : None
+ 190          * Return         : None
+ 191          *******************************************************************************/
+ 192          void RCC_IRQHandler(void)
+ 193          {}
+ 194          
+ 195          /*******************************************************************************
+ 196          * Function Name  : EXTI0_IRQHandler
+ 197          * Description    : This function handles External interrupt Line 0 request.
+ 198          * Input          : None
+ 199          * Output         : None
+ 200          * Return         : None
+ 201          *******************************************************************************/
+ 202          void EXTI0_IRQHandler(void)
+ 203          {}
+ 204          
+ 205          /*******************************************************************************
+ 206          * Function Name  : EXTI1_IRQHandler
+ 207          * Description    : This function handles External interrupt Line 1 request.
+ 208          * Input          : None
+ 209          * Output         : None
+ 210          * Return         : None
+ 211          *******************************************************************************/
+ 212          void EXTI1_IRQHandler(void)
+ 213          {}
+ 214          
+ 215          /*******************************************************************************
+ 216          * Function Name  : EXTI2_IRQHandler
+ 217          * Description    : This function handles External interrupt Line 2 request.
+ 218          * Input          : None
+ 219          * Output         : None
+ 220          * Return         : None
+ 221          *******************************************************************************/
+ 222          void EXTI2_IRQHandler(void)
+ 223          {}
+ 224          
+ 225          /*******************************************************************************
+ 226          * Function Name  : EXTI3_IRQHandler
+ 227          * Description    : This function handles External interrupt Line 3 request.
+ 228          * Input          : None
+ 229          * Output         : None
+ 230          * Return         : None
+ 231          *******************************************************************************/
+ 232          void EXTI3_IRQHandler(void)
+ 233          {}
+ 234          
+ 235          /*******************************************************************************
+ 236          * Function Name  : EXTI4_IRQHandler
+ 237          * Description    : This function handles External interrupt Line 4 request.
+ 238          * Input          : None
+ 239          * Output         : None
+ 240          * Return         : None
+C51 COMPILER V9.05   STM32F10X_IT                                                          05/30/2012 19:29:54 PAGE 5   
+
+ 241          *******************************************************************************/
+ 242          void EXTI4_IRQHandler(void)
+ 243          {}
+ 244          
+ 245          /*******************************************************************************
+ 246          * Function Name  : DMA1_Channel1_IRQHandler
+ 247          * Description    : This function handles DMA1 Channel 1 interrupt request.
+ 248          * Input          : None
+ 249          * Output         : None
+ 250          * Return         : None
+ 251          *******************************************************************************/
+ 252          void DMA1_Channel1_IRQHandler(void)
+ 253          {}
+ 254          
+ 255          /*******************************************************************************
+ 256          * Function Name  : DMA1_Channel2_IRQHandler
+ 257          * Description    : This function handles DMA1 Channel 2 interrupt request.
+ 258          * Input          : None
+ 259          * Output         : None
+ 260          * Return         : None
+ 261          *******************************************************************************/
+ 262          void DMA1_Channel2_IRQHandler(void)
+ 263          {}
+ 264          
+ 265          /*******************************************************************************
+ 266          * Function Name  : DMA1_Channel3_IRQHandler
+ 267          * Description    : This function handles DMA1 Channel 3 interrupt request.
+ 268          * Input          : None
+ 269          * Output         : None
+ 270          * Return         : None
+ 271          *******************************************************************************/
+ 272          void DMA1_Channel3_IRQHandler(void)
+ 273          {}
+ 274          
+ 275          /*******************************************************************************
+ 276          * Function Name  : DMA1_Channel4_IRQHandler
+ 277          * Description    : This function handles DMA1 Channel 4 interrupt request.
+ 278          * Input          : None
+ 279          * Output         : None
+ 280          * Return         : None
+ 281          *******************************************************************************/
+ 282          void DMA1_Channel4_IRQHandler(void)
+ 283          {}
+ 284          
+ 285          /*******************************************************************************
+ 286          * Function Name  : DMA1_Channel5_IRQHandler
+ 287          * Description    : This function handles DMA1 Channel 5 interrupt request.
+ 288          * Input          : None
+ 289          * Output         : None
+ 290          * Return         : None
+ 291          *******************************************************************************/
+ 292          void DMA1_Channel5_IRQHandler(void)
+ 293          {}
+ 294          
+ 295          /*******************************************************************************
+ 296          * Function Name  : DMA1_Channel6_IRQHandler
+ 297          * Description    : This function handles DMA1 Channel 6 interrupt request.
+ 298          * Input          : None
+ 299          * Output         : None
+ 300          * Return         : None
+ 301          *******************************************************************************/
+ 302          void DMA1_Channel6_IRQHandler(void)
+C51 COMPILER V9.05   STM32F10X_IT                                                          05/30/2012 19:29:54 PAGE 6   
+
+ 303          {}
+ 304          
+ 305          /*******************************************************************************
+ 306          * Function Name  : DMA1_Channel7_IRQHandler
+ 307          * Description    : This function handles DMA1 Channel 7 interrupt request.
+ 308          * Input          : None
+ 309          * Output         : None
+ 310          * Return         : None
+ 311          *******************************************************************************/
+ 312          void DMA1_Channel7_IRQHandler(void)
+ 313          {}
+ 314          
+ 315          /*******************************************************************************
+ 316          * Function Name  : ADC1_2_IRQHandler
+ 317          * Description    : This function handles ADC1 and ADC2 global interrupts requests.
+ 318          * Input          : None
+ 319          * Output         : None
+ 320          * Return         : None
+ 321          *******************************************************************************/
+ 322          void ADC1_2_IRQHandler(void)
+ 323          {}
+ 324          
+ 325          /*******************************************************************************
+ 326          * Function Name  : USB_HP_CAN_TX_IRQHandler
+ 327          * Description    : This function handles USB High Priority or CAN TX interrupts
+ 328          *                  requests.
+ 329          * Input          : None
+ 330          * Output         : None
+ 331          * Return         : None
+ 332          *******************************************************************************/
+ 333          void USB_HP_CAN_TX_IRQHandler(void)
+ 334          {}
+ 335          
+ 336          /*******************************************************************************
+ 337          * Function Name  : USB_LP_CAN_RX0_IRQHandler
+ 338          * Description    : This function handles USB Low Priority or CAN RX0 interrupts
+ 339          *                  requests.
+ 340          * Input          : None
+ 341          * Output         : None
+ 342          * Return         : None
+ 343          *******************************************************************************/
+ 344          void USB_LP_CAN_RX0_IRQHandler(void)
+ 345          {}
+ 346          
+ 347          /*******************************************************************************
+ 348          * Function Name  : CAN_RX1_IRQHandler
+ 349          * Description    : This function handles CAN RX1 interrupt request.
+ 350          * Input          : None
+ 351          * Output         : None
+ 352          * Return         : None
+ 353          *******************************************************************************/
+ 354          void CAN_RX1_IRQHandler(void)
+ 355          {}
+ 356          
+ 357          /*******************************************************************************
+ 358          * Function Name  : CAN_SCE_IRQHandler
+ 359          * Description    : This function handles CAN SCE interrupt request.
+ 360          * Input          : None
+ 361          * Output         : None
+ 362          * Return         : None
+ 363          *******************************************************************************/
+ 364          void CAN_SCE_IRQHandler(void)
+C51 COMPILER V9.05   STM32F10X_IT                                                          05/30/2012 19:29:54 PAGE 7   
+
+ 365          {}
+ 366          
+ 367          /*******************************************************************************
+ 368          * Function Name  : EXTI9_5_IRQHandler
+ 369          * Description    : This function handles External lines 9 to 5 interrupt request.
+ 370          * Input          : None
+ 371          * Output         : None
+ 372          * Return         : None
+ 373          *******************************************************************************/
+ 374          void EXTI9_5_IRQHandler(void)
+ 375          {}
+ 376          
+ 377          /*******************************************************************************
+ 378          * Function Name  : TIM1_BRK_IRQHandler
+ 379          * Description    : This function handles TIM1 Break interrupt request.
+ 380          * Input          : None
+ 381          * Output         : None
+ 382          * Return         : None
+ 383          *******************************************************************************/
+ 384          void TIM1_BRK_IRQHandler(void)
+ 385          {}
+ 386          
+ 387          /*******************************************************************************
+ 388          * Function Name  : TIM1_UP_IRQHandler
+ 389          * Description    : This function handles TIM1 overflow and update interrupt
+ 390          *                  request.
+ 391          * Input          : None
+ 392          * Output         : None
+ 393          * Return         : None
+ 394          *******************************************************************************/
+ 395          void TIM1_UP_IRQHandler(void)
+ 396          {}
+ 397          
+ 398          /*******************************************************************************
+ 399          * Function Name  : TIM1_TRG_COM_IRQHandler
+ 400          * Description    : This function handles TIM1 Trigger and commutation interrupts
+ 401          *                  requests.
+ 402          * Input          : None
+ 403          * Output         : None
+ 404          * Return         : None
+ 405          *******************************************************************************/
+ 406          void TIM1_TRG_COM_IRQHandler(void)
+ 407          {}
+ 408          
+ 409          /*******************************************************************************
+ 410          * Function Name  : TIM1_CC_IRQHandler
+ 411          * Description    : This function handles TIM1 capture compare interrupt request.
+ 412          * Input          : None
+ 413          * Output         : None
+ 414          * Return         : None
+ 415          *******************************************************************************/
+ 416          void TIM1_CC_IRQHandler(void)
+ 417          {}
+ 418          
+ 419          /*******************************************************************************
+ 420          * Function Name  : TIM2_IRQHandler
+ 421          * Description    : This function handles TIM2 global interrupt request.
+ 422          * Input          : None
+ 423          * Output         : None
+ 424          * Return         : None
+ 425          *******************************************************************************/
+ 426          void TIM2_IRQHandler(void)
+C51 COMPILER V9.05   STM32F10X_IT                                                          05/30/2012 19:29:54 PAGE 8   
+
+ 427          {}
+ 428          
+ 429          /*******************************************************************************
+ 430          * Function Name  : TIM3_IRQHandler
+ 431          * Description    : This function handles TIM3 global interrupt request.
+ 432          * Input          : None
+ 433          * Output         : None
+ 434          * Return         : None
+ 435          *******************************************************************************/
+ 436          void TIM3_IRQHandler(void)
+ 437          {}
+ 438          
+ 439          /*******************************************************************************
+ 440          * Function Name  : TIM4_IRQHandler
+ 441          * Description    : This function handles TIM4 global interrupt request.
+ 442          * Input          : None
+ 443          * Output         : None
+ 444          * Return         : None
+ 445          *******************************************************************************/
+ 446          void TIM4_IRQHandler(void)
+ 447          {}
+ 448          
+ 449          /*******************************************************************************
+ 450          * Function Name  : I2C1_EV_IRQHandler
+ 451          * Description    : This function handles I2C1 Event interrupt request.
+ 452          * Input          : None
+ 453          * Output         : None
+ 454          * Return         : None
+ 455          *******************************************************************************/
+ 456          void I2C1_EV_IRQHandler(void)
+ 457          {}
+ 458          
+ 459          /*******************************************************************************
+ 460          * Function Name  : I2C1_ER_IRQHandler
+ 461          * Description    : This function handles I2C1 Error interrupt request.
+ 462          * Input          : None
+ 463          * Output         : None
+ 464          * Return         : None
+ 465          *******************************************************************************/
+ 466          void I2C1_ER_IRQHandler(void)
+ 467          {}
+ 468          
+ 469          /*******************************************************************************
+ 470          * Function Name  : I2C2_EV_IRQHandler
+ 471          * Description    : This function handles I2C2 Event interrupt request.
+ 472          * Input          : None
+ 473          * Output         : None
+ 474          * Return         : None
+ 475          *******************************************************************************/
+ 476          void I2C2_EV_IRQHandler(void)
+ 477          {}
+ 478          
+ 479          /*******************************************************************************
+ 480          * Function Name  : I2C2_ER_IRQHandler
+ 481          * Description    : This function handles I2C2 Error interrupt request.
+ 482          * Input          : None
+ 483          * Output         : None
+ 484          * Return         : None
+ 485          *******************************************************************************/
+ 486          void I2C2_ER_IRQHandler(void)
+ 487          {}
+ 488          
+C51 COMPILER V9.05   STM32F10X_IT                                                          05/30/2012 19:29:54 PAGE 9   
+
+ 489          /*******************************************************************************
+ 490          * Function Name  : SPI1_IRQHandler
+ 491          * Description    : This function handles SPI1 global interrupt request.
+ 492          * Input          : None
+ 493          * Output         : None
+ 494          * Return         : None
+ 495          *******************************************************************************/
+ 496          void SPI1_IRQHandler(void)
+ 497          {}
+ 498          
+ 499          /*******************************************************************************
+ 500          * Function Name  : SPI2_IRQHandler
+ 501          * Description    : This function handles SPI2 global interrupt request.
+ 502          * Input          : None
+ 503          * Output         : None
+ 504          * Return         : None
+ 505          *******************************************************************************/
+ 506          void SPI2_IRQHandler(void)
+ 507          {}
+ 508          
+ 509          /*******************************************************************************
+ 510          * Function Name  : USART1_IRQHandler
+ 511          * Description    : This function handles USART1 global interrupt request.
+ 512          * Input          : None
+ 513          * Output         : None
+ 514          * Return         : None
+ 515          *******************************************************************************/
+ 516          void USART1_IRQHandler(void)
+ 517          {}
+ 518          
+ 519          /*******************************************************************************
+ 520          * Function Name  : USART2_IRQHandler
+ 521          * Description    : This function handles USART2 global interrupt request.
+ 522          * Input          : None
+ 523          * Output         : None
+ 524          * Return         : None
+ 525          *******************************************************************************/
+ 526          void USART2_IRQHandler(void)
+ 527          {}
+ 528          
+ 529          /*******************************************************************************
+ 530          * Function Name  : USART3_IRQHandler
+ 531          * Description    : This function handles USART3 global interrupt request.
+ 532          * Input          : None
+ 533          * Output         : None
+ 534          * Return         : None
+ 535          *******************************************************************************/
+ 536          void USART3_IRQHandler(void)
+ 537          {}
+ 538          
+ 539          /*******************************************************************************
+ 540          * Function Name  : EXTI15_10_IRQHandler
+ 541          * Description    : This function handles External lines 15 to 10 interrupt request.
+ 542          * Input          : None
+ 543          * Output         : None
+ 544          * Return         : None
+ 545          *******************************************************************************/
+ 546          void EXTI15_10_IRQHandler(void)
+ 547          {}
+ 548          
+ 549          /*******************************************************************************
+ 550          * Function Name  : RTCAlarm_IRQHandler
+C51 COMPILER V9.05   STM32F10X_IT                                                          05/30/2012 19:29:54 PAGE 10  
+
+ 551          * Description    : This function handles RTC Alarm interrupt request.
+ 552          * Input          : None
+ 553          * Output         : None
+ 554          * Return         : None
+ 555          *******************************************************************************/
+ 556          void RTCAlarm_IRQHandler(void)
+ 557          {}
+ 558          
+ 559          /*******************************************************************************
+ 560          * Function Name  : USBWakeUp_IRQHandler
+ 561          * Description    : This function handles USB WakeUp interrupt request.
+ 562          * Input          : None
+ 563          * Output         : None
+ 564          * Return         : None
+ 565          *******************************************************************************/
+ 566          void USBWakeUp_IRQHandler(void)
+ 567          {}
+ 568          
+ 569          /*******************************************************************************
+ 570          * Function Name  : TIM8_BRK_IRQHandler
+ 571          * Description    : This function handles TIM8 Break interrupt request.
+ 572          * Input          : None
+ 573          * Output         : None
+ 574          * Return         : None
+ 575          *******************************************************************************/
+ 576          void TIM8_BRK_IRQHandler(void)
+ 577          {}
+ 578          
+ 579          /*******************************************************************************
+ 580          * Function Name  : TIM8_UP_IRQHandler
+ 581          * Description    : This function handles TIM8 overflow and update interrupt
+ 582          *                  request.
+ 583          * Input          : None
+ 584          * Output         : None
+ 585          * Return         : None
+ 586          *******************************************************************************/
+ 587          void TIM8_UP_IRQHandler(void)
+ 588          {}
+ 589          
+ 590          /*******************************************************************************
+ 591          * Function Name  : TIM8_TRG_COM_IRQHandler
+ 592          * Description    : This function handles TIM8 Trigger and commutation interrupts
+ 593          *                  requests.
+ 594          * Input          : None
+ 595          * Output         : None
+ 596          * Return         : None
+ 597          *******************************************************************************/
+ 598          void TIM8_TRG_COM_IRQHandler(void)
+ 599          {}
+ 600          
+ 601          /*******************************************************************************
+ 602          * Function Name  : TIM8_CC_IRQHandler
+ 603          * Description    : This function handles TIM8 capture compare interrupt request.
+ 604          * Input          : None
+ 605          * Output         : None
+ 606          * Return         : None
+ 607          *******************************************************************************/
+ 608          void TIM8_CC_IRQHandler(void)
+ 609          {}
+ 610          
+ 611          /*******************************************************************************
+ 612          * Function Name  : ADC3_IRQHandler
+C51 COMPILER V9.05   STM32F10X_IT                                                          05/30/2012 19:29:54 PAGE 11  
+
+ 613          * Description    : This function handles ADC3 global interrupt request.
+ 614          * Input          : None
+ 615          * Output         : None
+ 616          * Return         : None
+ 617          *******************************************************************************/
+ 618          void ADC3_IRQHandler(void)
+ 619          {}
+ 620          
+ 621          /*******************************************************************************
+ 622          * Function Name  : FSMC_IRQHandler
+ 623          * Description    : This function handles FSMC global interrupt request.
+ 624          * Input          : None
+ 625          * Output         : None
+ 626          * Return         : None
+ 627          *******************************************************************************/
+ 628          void FSMC_IRQHandler(void)
+ 629          {}
+ 630          
+ 631          /*******************************************************************************
+ 632          * Function Name  : SDIO_IRQHandler
+ 633          * Description    : This function handles SDIO global interrupt request.
+ 634          * Input          : None
+ 635          * Output         : None
+ 636          * Return         : None
+ 637          *******************************************************************************/
+ 638          void SDIO_IRQHandler(void)
+ 639          {}
+ 640          
+ 641          /*******************************************************************************
+ 642          * Function Name  : TIM5_IRQHandler
+ 643          * Description    : This function handles TIM5 global interrupt request.
+ 644          * Input          : None
+ 645          * Output         : None
+ 646          * Return         : None
+ 647          *******************************************************************************/
+ 648          void TIM5_IRQHandler(void)
+ 649          {}
+ 650          
+ 651          /*******************************************************************************
+ 652          * Function Name  : SPI3_IRQHandler
+ 653          * Description    : This function handles SPI3 global interrupt request.
+ 654          * Input          : None
+ 655          * Output         : None
+ 656          * Return         : None
+ 657          *******************************************************************************/
+ 658          void SPI3_IRQHandler(void)
+ 659          {}
+ 660          
+ 661          /*******************************************************************************
+ 662          * Function Name  : UART4_IRQHandler
+ 663          * Description    : This function handles UART4 global interrupt request.
+ 664          * Input          : None
+ 665          * Output         : None
+ 666          * Return         : None
+ 667          *******************************************************************************/
+ 668          void UART4_IRQHandler(void)
+ 669          {}
+ 670          
+ 671          /*******************************************************************************
+ 672          * Function Name  : UART5_IRQHandler
+ 673          * Description    : This function handles UART5 global interrupt request.
+ 674          * Input          : None
+C51 COMPILER V9.05   STM32F10X_IT                                                          05/30/2012 19:29:54 PAGE 12  
+
+ 675          * Output         : None
+ 676          * Return         : None
+ 677          *******************************************************************************/
+ 678          void UART5_IRQHandler(void)
+ 679          {}
+ 680          
+ 681          /*******************************************************************************
+ 682          * Function Name  : TIM6_IRQHandler
+ 683          * Description    : This function handles TIM6 global interrupt request.
+ 684          * Input          : None
+ 685          * Output         : None
+ 686          * Return         : None
+ 687          *******************************************************************************/
+ 688          void TIM6_IRQHandler(void)
+ 689          {}
+ 690          
+ 691          /*******************************************************************************
+ 692          * Function Name  : TIM7_IRQHandler
+ 693          * Description    : This function handles TIM7 global interrupt request.
+ 694          * Input          : None
+ 695          * Output         : None
+ 696          * Return         : None
+ 697          *******************************************************************************/
+ 698          void TIM7_IRQHandler(void)
+ 699          {}
+ 700          
+ 701          /*******************************************************************************
+ 702          * Function Name  : DMA2_Channel1_IRQHandler
+ 703          * Description    : This function handles DMA2 Channel 1 interrupt request.
+ 704          * Input          : None
+ 705          * Output         : None
+ 706          * Return         : None
+ 707          *******************************************************************************/
+ 708          void DMA2_Channel1_IRQHandler(void)
+ 709          {}
+ 710          
+ 711          /*******************************************************************************
+ 712          * Function Name  : DMA2_Channel2_IRQHandler
+ 713          * Description    : This function handles DMA2 Channel 2 interrupt request.
+ 714          * Input          : None
+ 715          * Output         : None
+ 716          * Return         : None
+ 717          *******************************************************************************/
+ 718          void DMA2_Channel2_IRQHandler(void)
+ 719          {}
+ 720          
+ 721          /*******************************************************************************
+ 722          * Function Name  : DMA2_Channel3_IRQHandler
+ 723          * Description    : This function handles DMA2 Channel 3 interrupt request.
+ 724          * Input          : None
+ 725          * Output         : None
+ 726          * Return         : None
+ 727          *******************************************************************************/
+ 728          void DMA2_Channel3_IRQHandler(void)
+ 729          {}
+ 730          
+ 731          /*******************************************************************************
+ 732          * Function Name  : DMA2_Channel4_5_IRQHandler
+ 733          * Description    : This function handles DMA2 Channel 4 and DMA2 Channel 5
+ 734          *                  interrupt request.
+ 735          * Input          : None
+ 736          * Output         : None
+C51 COMPILER V9.05   STM32F10X_IT                                                          05/30/2012 19:29:54 PAGE 13  
+
+ 737          * Return         : None
+ 738          *******************************************************************************/
+ 739          void DMA2_Channel4_5_IRQHandler(void)
+ 740          {}
+ 741          
+ 742          /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     72    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,1 @@
+"..\..\library\src\stm32f10x_nvic.c" DEBUG OBJECTEXTEND PRINT(.\stm32f10x_nvic.lst) OBJECT(.\stm32f10x_nvic.obj)

@@ -1,0 +1,19 @@
+syms t1 t2 t3
+v=[1; 1; 1];
+w=[1;1;1];
+t=[t1;t2;t3]
+dv=[.1; .1; .1];
+dw=[.1; .1; .1];
+A=eye(3);
+l=dv-skew_sym(t)*A*w-A*dw
+loss=sum(l.*l)
+eq=sym(zeros(3,1))
+for ii=1:3
+    eq(ii)=diff(loss,t1)
+end
+% AA=sym(eye(3));
+for ii=1:3
+    for jj=1:3
+        AA(ii)=coeffs(eq(ii))
+    end
+end

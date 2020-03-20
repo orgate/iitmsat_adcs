@@ -1,0 +1,592 @@
+A51 MACRO ASSEMBLER  CORTEXM3_MACRO                                                       06/03/2012 17:04:56 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.02a
+NO OBJECT MODULE REQUESTED
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE cortexm3_macro.s SET(SMALL) DEBUG EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
+                       2     ;* File Name          : cortexm3_macro.s
+                       3     ;* Author             : MCD Application Team
+                       4     ;* Version            : V2.0.3
+                       5     ;* Date               : 09/22/2008
+                       6     ;* Description        : Instruction wrappers for special Cortex-M3 instructions
+                       7     ;*                      to be used with RVMDK toolchain.
+                       8     ;*******************************************************************************
+                       9     ; THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+                      10     ; WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
+                      11     ; AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
+                      12     ; INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
+                      13     ; CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
+                      14     ; INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+                      15     ;*******************************************************************************
+                      16         
+                      17       THUMB
+*** ___________________________^
+*** ERROR #A9 IN 17 (cortexm3_macro.s, LINE 17): SYNTAX ERROR
+                      18       REQUIRE8
+*** ___________________________^
+*** ERROR #A9 IN 18 (cortexm3_macro.s, LINE 18): SYNTAX ERROR
+                      19       PRESERVE8
+*** ___________________________^
+*** ERROR #A9 IN 19 (cortexm3_macro.s, LINE 19): SYNTAX ERROR
+                      20         
+                      21       AREA |.text|, CODE, READONLY, ALIGN=2
+*** ___________________________^
+*** ERROR #A9 IN 21 (cortexm3_macro.s, LINE 21): SYNTAX ERROR
+                      22     
+                      23       ; Exported functions
+                      24       EXPORT __WFI
+*** ___________________________^
+*** ERROR #A9 IN 24 (cortexm3_macro.s, LINE 24): SYNTAX ERROR
+                      25       EXPORT __WFE
+*** ___________________________^
+*** ERROR #A9 IN 25 (cortexm3_macro.s, LINE 25): SYNTAX ERROR
+                      26       EXPORT __SEV
+*** ___________________________^
+*** ERROR #A9 IN 26 (cortexm3_macro.s, LINE 26): SYNTAX ERROR
+                      27       EXPORT __ISB
+*** ___________________________^
+*** ERROR #A9 IN 27 (cortexm3_macro.s, LINE 27): SYNTAX ERROR
+                      28       EXPORT __DSB
+*** ___________________________^
+*** ERROR #A9 IN 28 (cortexm3_macro.s, LINE 28): SYNTAX ERROR
+                      29       EXPORT __DMB
+*** ___________________________^
+*** ERROR #A9 IN 29 (cortexm3_macro.s, LINE 29): SYNTAX ERROR
+                      30       EXPORT __SVC
+*** ___________________________^
+*** ERROR #A9 IN 30 (cortexm3_macro.s, LINE 30): SYNTAX ERROR
+                      31       EXPORT __MRS_CONTROL
+*** ___________________________^
+*** ERROR #A9 IN 31 (cortexm3_macro.s, LINE 31): SYNTAX ERROR
+                      32       EXPORT __MSR_CONTROL
+*** ___________________________^
+*** ERROR #A9 IN 32 (cortexm3_macro.s, LINE 32): SYNTAX ERROR
+A51 MACRO ASSEMBLER  CORTEXM3_MACRO                                                       06/03/2012 17:04:56 PAGE     2
+
+                      33       EXPORT __MRS_PSP
+*** ___________________________^
+*** ERROR #A9 IN 33 (cortexm3_macro.s, LINE 33): SYNTAX ERROR
+                      34       EXPORT __MSR_PSP
+*** ___________________________^
+*** ERROR #A9 IN 34 (cortexm3_macro.s, LINE 34): SYNTAX ERROR
+                      35       EXPORT __MRS_MSP
+*** ___________________________^
+*** ERROR #A9 IN 35 (cortexm3_macro.s, LINE 35): SYNTAX ERROR
+                      36       EXPORT __MSR_MSP   
+*** ___________________________^
+*** ERROR #A9 IN 36 (cortexm3_macro.s, LINE 36): SYNTAX ERROR
+                      37       EXPORT __RESETPRIMASK
+*** ___________________________^
+*** ERROR #A9 IN 37 (cortexm3_macro.s, LINE 37): SYNTAX ERROR
+                      38       EXPORT __SETPRIMASK
+*** ___________________________^
+*** ERROR #A9 IN 38 (cortexm3_macro.s, LINE 38): SYNTAX ERROR
+                      39       EXPORT __READ_PRIMASK
+*** ___________________________^
+*** ERROR #A9 IN 39 (cortexm3_macro.s, LINE 39): SYNTAX ERROR
+                      40       EXPORT __RESETFAULTMASK  
+*** ___________________________^
+*** ERROR #A9 IN 40 (cortexm3_macro.s, LINE 40): SYNTAX ERROR
+                      41       EXPORT __SETFAULTMASK
+*** ___________________________^
+*** ERROR #A9 IN 41 (cortexm3_macro.s, LINE 41): SYNTAX ERROR
+                      42       EXPORT __READ_FAULTMASK
+*** ___________________________^
+*** ERROR #A9 IN 42 (cortexm3_macro.s, LINE 42): SYNTAX ERROR
+                      43       EXPORT __BASEPRICONFIG
+*** ___________________________^
+*** ERROR #A9 IN 43 (cortexm3_macro.s, LINE 43): SYNTAX ERROR
+                      44       EXPORT __GetBASEPRI
+*** ___________________________^
+*** ERROR #A9 IN 44 (cortexm3_macro.s, LINE 44): SYNTAX ERROR
+                      45       EXPORT __REV_HalfWord
+*** ___________________________^
+*** ERROR #A9 IN 45 (cortexm3_macro.s, LINE 45): SYNTAX ERROR
+                      46       EXPORT __REV_Word
+*** ___________________________^
+*** ERROR #A9 IN 46 (cortexm3_macro.s, LINE 46): SYNTAX ERROR
+                      47     
+                      48     ;*******************************************************************************
+                      49     ; Function Name  : __WFI
+                      50     ; Description    : Assembler function for the WFI instruction.
+                      51     ; Input          : None
+                      52     ; Return         : None
+                      53     ;*******************************************************************************
+                      54     __WFI 
+*** _________________________^
+*** ERROR #A9 IN 54 (cortexm3_macro.s, LINE 54): SYNTAX ERROR
+                      55      
+                      56         WFI
+*** _____________________________^
+*** ERROR #A9 IN 56 (cortexm3_macro.s, LINE 56): SYNTAX ERROR
+                      57         BX r14
+*** _____________________________^
+*** ERROR #A9 IN 57 (cortexm3_macro.s, LINE 57): SYNTAX ERROR
+                      58     
+                      59     ;*******************************************************************************
+                      60     ; Function Name  : __WFE
+                      61     ; Description    : Assembler function for the WFE instruction.
+                      62     ; Input          : None
+                      63     ; Return         : None
+                      64     ;*******************************************************************************
+A51 MACRO ASSEMBLER  CORTEXM3_MACRO                                                       06/03/2012 17:04:56 PAGE     3
+
+                      65     __WFE
+*** _________________________^
+*** ERROR #A9 IN 65 (cortexm3_macro.s, LINE 65): SYNTAX ERROR
+                      66     
+                      67         WFE
+*** _____________________________^
+*** ERROR #A9 IN 67 (cortexm3_macro.s, LINE 67): SYNTAX ERROR
+                      68         BX r14
+*** _____________________________^
+*** ERROR #A9 IN 68 (cortexm3_macro.s, LINE 68): SYNTAX ERROR
+                      69     
+                      70     ;*******************************************************************************
+                      71     ; Function Name  : __SEV
+                      72     ; Description    : Assembler function for the SEV instruction.
+                      73     ; Input          : None
+                      74     ; Return         : None
+                      75     ;*******************************************************************************
+                      76     __SEV
+*** _________________________^
+*** ERROR #A9 IN 76 (cortexm3_macro.s, LINE 76): SYNTAX ERROR
+                      77     
+                      78         SEV
+*** _____________________________^
+*** ERROR #A9 IN 78 (cortexm3_macro.s, LINE 78): SYNTAX ERROR
+                      79         BX r14
+*** _____________________________^
+*** ERROR #A9 IN 79 (cortexm3_macro.s, LINE 79): SYNTAX ERROR
+                      80     
+                      81     ;*******************************************************************************
+                      82     ; Function Name  : __ISB
+                      83     ; Description    : Assembler function for the ISB instruction.
+                      84     ; Input          : None
+                      85     ; Return         : None
+                      86     ;*******************************************************************************
+                      87     __ISB
+*** _________________________^
+*** ERROR #A9 IN 87 (cortexm3_macro.s, LINE 87): SYNTAX ERROR
+                      88     
+                      89         ISB
+*** _____________________________^
+*** ERROR #A9 IN 89 (cortexm3_macro.s, LINE 89): SYNTAX ERROR
+                      90         BX r14
+*** _____________________________^
+*** ERROR #A9 IN 90 (cortexm3_macro.s, LINE 90): SYNTAX ERROR
+                      91     
+                      92     ;*******************************************************************************
+                      93     ; Function Name  : __DSB
+                      94     ; Description    : Assembler function for the DSB instruction.
+                      95     ; Input          : None
+                      96     ; Return         : None
+                      97     ;*******************************************************************************
+                      98     __DSB
+*** _________________________^
+*** ERROR #A9 IN 98 (cortexm3_macro.s, LINE 98): SYNTAX ERROR
+                      99     
+                     100         DSB
+*** _____________________________^
+*** ERROR #A9 IN 100 (cortexm3_macro.s, LINE 100): SYNTAX ERROR
+                     101         BX r14
+*** _____________________________^
+*** ERROR #A9 IN 101 (cortexm3_macro.s, LINE 101): SYNTAX ERROR
+                     102     
+                     103     ;*******************************************************************************
+                     104     ; Function Name  : __DMB
+                     105     ; Description    : Assembler function for the DMB instruction.
+                     106     ; Input          : None
+A51 MACRO ASSEMBLER  CORTEXM3_MACRO                                                       06/03/2012 17:04:56 PAGE     4
+
+                     107     ; Return         : None
+                     108     ;*******************************************************************************
+                     109     __DMB
+*** _________________________^
+*** ERROR #A9 IN 109 (cortexm3_macro.s, LINE 109): SYNTAX ERROR
+                     110     
+                     111         DMB
+*** _____________________________^
+*** ERROR #A9 IN 111 (cortexm3_macro.s, LINE 111): SYNTAX ERROR
+                     112         BX r14
+*** _____________________________^
+*** ERROR #A9 IN 112 (cortexm3_macro.s, LINE 112): SYNTAX ERROR
+                     113     
+                     114     ;*******************************************************************************
+                     115     ; Function Name  : __SVC
+                     116     ; Description    : Assembler function for the SVC instruction.
+                     117     ; Input          : None
+                     118     ; Return         : None
+                     119     ;*******************************************************************************
+                     120     __SVC
+*** _________________________^
+*** ERROR #A9 IN 120 (cortexm3_macro.s, LINE 120): SYNTAX ERROR
+                     121     
+                     122         SVC 0x01
+*** _____________________________^
+*** ERROR #A9 IN 122 (cortexm3_macro.s, LINE 122): SYNTAX ERROR
+                     123         BX r14
+*** _____________________________^
+*** ERROR #A9 IN 123 (cortexm3_macro.s, LINE 123): SYNTAX ERROR
+                     124     
+                     125     ;*******************************************************************************
+                     126     ; Function Name  : __MRS_CONTROL
+                     127     ; Description    : Assembler function for the MRS instruction.
+                     128     ; Input          : None
+                     129     ; Return         : - r0 : Cortex-M3 CONTROL register value.
+                     130     ;*******************************************************************************
+                     131     __MRS_CONTROL
+*** _________________________^
+*** ERROR #A9 IN 131 (cortexm3_macro.s, LINE 131): SYNTAX ERROR
+                     132     
+                     133       MRS r0, CONTROL
+*** ___________________________^
+*** ERROR #A9 IN 133 (cortexm3_macro.s, LINE 133): SYNTAX ERROR
+                     134       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 134 (cortexm3_macro.s, LINE 134): SYNTAX ERROR
+                     135     
+                     136     ;*******************************************************************************
+                     137     ; Function Name  : __MSR_CONTROL
+                     138     ; Description    : Assembler function for the MSR instruction.
+                     139     ; Input          : - r0 : Cortex-M3 CONTROL register new value.  
+                     140     ; Return         : None
+                     141     ;*******************************************************************************
+                     142     __MSR_CONTROL
+*** _________________________^
+*** ERROR #A9 IN 142 (cortexm3_macro.s, LINE 142): SYNTAX ERROR
+                     143     
+                     144       MSR CONTROL, r0
+*** ___________________________^
+*** ERROR #A9 IN 144 (cortexm3_macro.s, LINE 144): SYNTAX ERROR
+                     145       ISB
+*** ___________________________^
+*** ERROR #A9 IN 145 (cortexm3_macro.s, LINE 145): SYNTAX ERROR
+                     146       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 146 (cortexm3_macro.s, LINE 146): SYNTAX ERROR
+A51 MACRO ASSEMBLER  CORTEXM3_MACRO                                                       06/03/2012 17:04:56 PAGE     5
+
+                     147     
+                     148     ;*******************************************************************************
+                     149     ; Function Name  : __MRS_PSP
+                     150     ; Description    : Assembler function for the MRS instruction.
+                     151     ; Input          : None
+                     152     ; Return         : - r0 : Process Stack value.
+                     153     ;*******************************************************************************
+                     154     __MRS_PSP
+*** _________________________^
+*** ERROR #A9 IN 154 (cortexm3_macro.s, LINE 154): SYNTAX ERROR
+                     155     
+                     156       MRS r0, PSP
+*** ___________________________^
+*** ERROR #A9 IN 156 (cortexm3_macro.s, LINE 156): SYNTAX ERROR
+                     157       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 157 (cortexm3_macro.s, LINE 157): SYNTAX ERROR
+                     158     
+                     159     ;*******************************************************************************
+                     160     ; Function Name  : __MSR_PSP
+                     161     ; Description    : Assembler function for the MSR instruction.
+                     162     ; Input          : - r0 : Process Stack new value.  
+                     163     ; Return         : None
+                     164     ;*******************************************************************************
+                     165     __MSR_PSP 
+*** _________________________^
+*** ERROR #A9 IN 165 (cortexm3_macro.s, LINE 165): SYNTAX ERROR
+                     166      
+                     167         MSR PSP, r0 ; set Process Stack value
+*** _____________________________^
+*** ERROR #A9 IN 167 (cortexm3_macro.s, LINE 167): SYNTAX ERROR
+                     168         BX r14
+*** _____________________________^
+*** ERROR #A9 IN 168 (cortexm3_macro.s, LINE 168): SYNTAX ERROR
+                     169     
+                     170     ;*******************************************************************************
+                     171     ; Function Name  : __MRS_MSP
+                     172     ; Description    : Assembler function for the MRS instruction.
+                     173     ; Input          : None
+                     174     ; Return         : - r0 : Main Stack value.
+                     175     ;*******************************************************************************
+                     176     __MRS_MSP
+*** _________________________^
+*** ERROR #A9 IN 176 (cortexm3_macro.s, LINE 176): SYNTAX ERROR
+                     177     
+                     178       MRS r0, MSP
+*** ___________________________^
+*** ERROR #A9 IN 178 (cortexm3_macro.s, LINE 178): SYNTAX ERROR
+                     179       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 179 (cortexm3_macro.s, LINE 179): SYNTAX ERROR
+                     180     
+                     181     ;*******************************************************************************
+                     182     ; Function Name  : __MSR_MSP
+                     183     ; Description    : Assembler function for the MSR instruction.
+                     184     ; Input          : - r0 : Main Stack new value.  
+                     185     ; Return         : None
+                     186     ;*******************************************************************************
+                     187     __MSR_MSP 
+*** _________________________^
+*** ERROR #A9 IN 187 (cortexm3_macro.s, LINE 187): SYNTAX ERROR
+                     188      
+                     189         MSR MSP, r0 ; set Main Stack value
+*** _____________________________^
+*** ERROR #A9 IN 189 (cortexm3_macro.s, LINE 189): SYNTAX ERROR
+                     190         BX r14
+A51 MACRO ASSEMBLER  CORTEXM3_MACRO                                                       06/03/2012 17:04:56 PAGE     6
+
+*** _____________________________^
+*** ERROR #A9 IN 190 (cortexm3_macro.s, LINE 190): SYNTAX ERROR
+                     191     
+                     192     ;*******************************************************************************
+                     193     ; Function Name  : __RESETPRIMASK
+                     194     ; Description    : Assembler function to reset the PRIMASK.
+                     195     ; Input          : None 
+                     196     ; Return         : None
+                     197     ;*******************************************************************************
+                     198     __RESETPRIMASK
+*** _________________________^
+*** ERROR #A9 IN 198 (cortexm3_macro.s, LINE 198): SYNTAX ERROR
+                     199     
+                     200       CPSIE i
+*** ___________________________^
+*** ERROR #A9 IN 200 (cortexm3_macro.s, LINE 200): SYNTAX ERROR
+                     201       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 201 (cortexm3_macro.s, LINE 201): SYNTAX ERROR
+                     202     
+                     203     ;*******************************************************************************
+                     204     ; Function Name  : __SETPRIMASK
+                     205     ; Description    : Assembler function to set the PRIMASK.
+                     206     ; Input          : None 
+                     207     ; Return         : None
+                     208     ;*******************************************************************************
+                     209     __SETPRIMASK
+*** _________________________^
+*** ERROR #A9 IN 209 (cortexm3_macro.s, LINE 209): SYNTAX ERROR
+                     210     
+                     211       CPSID i
+*** ___________________________^
+*** ERROR #A9 IN 211 (cortexm3_macro.s, LINE 211): SYNTAX ERROR
+                     212       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 212 (cortexm3_macro.s, LINE 212): SYNTAX ERROR
+                     213     
+                     214     ;*******************************************************************************
+                     215     ; Function Name  : __READ_PRIMASK
+                     216     ; Description    : Assembler function to get the PRIMASK value.
+                     217     ; Input          : None
+                     218     ; Return         : - r0 : PRIMASK register value 
+                     219     ;*******************************************************************************
+                     220     __READ_PRIMASK 
+*** _________________________^
+*** ERROR #A9 IN 220 (cortexm3_macro.s, LINE 220): SYNTAX ERROR
+                     221      
+                     222       MRS r0, PRIMASK
+*** ___________________________^
+*** ERROR #A9 IN 222 (cortexm3_macro.s, LINE 222): SYNTAX ERROR
+                     223       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 223 (cortexm3_macro.s, LINE 223): SYNTAX ERROR
+                     224     
+                     225     ;*******************************************************************************
+                     226     ; Function Name  : __SETFAULTMASK
+                     227     ; Description    : Assembler function to set the FAULTMASK.
+                     228     ; Input          : None 
+                     229     ; Return         : None
+                     230     ;*******************************************************************************
+                     231     __SETFAULTMASK
+*** _________________________^
+*** ERROR #A9 IN 231 (cortexm3_macro.s, LINE 231): SYNTAX ERROR
+                     232     
+                     233       CPSID f
+*** ___________________________^
+A51 MACRO ASSEMBLER  CORTEXM3_MACRO                                                       06/03/2012 17:04:56 PAGE     7
+
+*** ERROR #A9 IN 233 (cortexm3_macro.s, LINE 233): SYNTAX ERROR
+                     234       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 234 (cortexm3_macro.s, LINE 234): SYNTAX ERROR
+                     235     
+                     236     ;*******************************************************************************
+                     237     ; Function Name  : __RESETFAULTMASK
+                     238     ; Description    : Assembler function to reset the FAULTMASK.
+                     239     ; Input          : None 
+                     240     ; Return         : None
+                     241     ;*******************************************************************************
+                     242     __RESETFAULTMASK
+*** _________________________^
+*** ERROR #A9 IN 242 (cortexm3_macro.s, LINE 242): SYNTAX ERROR
+                     243     
+                     244       CPSIE f
+*** ___________________________^
+*** ERROR #A9 IN 244 (cortexm3_macro.s, LINE 244): SYNTAX ERROR
+                     245       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 245 (cortexm3_macro.s, LINE 245): SYNTAX ERROR
+                     246     
+                     247     ;*******************************************************************************
+                     248     ; Function Name  : __READ_FAULTMASK
+                     249     ; Description    : Assembler function to get the FAULTMASK value.
+                     250     ; Input          : None
+                     251     ; Return         : - r0 : FAULTMASK register value 
+                     252     ;*******************************************************************************
+                     253     __READ_FAULTMASK 
+*** _________________________^
+*** ERROR #A9 IN 253 (cortexm3_macro.s, LINE 253): SYNTAX ERROR
+                     254      
+                     255       MRS r0, FAULTMASK
+*** ___________________________^
+*** ERROR #A9 IN 255 (cortexm3_macro.s, LINE 255): SYNTAX ERROR
+                     256       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 256 (cortexm3_macro.s, LINE 256): SYNTAX ERROR
+                     257     
+                     258     ;*******************************************************************************
+                     259     ; Function Name  : __BASEPRICONFIG
+                     260     ; Description    : Assembler function to set the Base Priority.
+                     261     ; Input          : - r0 : Base Priority new value  
+                     262     ; Return         : None
+                     263     ;*******************************************************************************
+                     264     __BASEPRICONFIG
+*** _________________________^
+*** ERROR #A9 IN 264 (cortexm3_macro.s, LINE 264): SYNTAX ERROR
+                     265     
+                     266       MSR BASEPRI, r0
+*** ___________________________^
+*** ERROR #A9 IN 266 (cortexm3_macro.s, LINE 266): SYNTAX ERROR
+                     267       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 267 (cortexm3_macro.s, LINE 267): SYNTAX ERROR
+                     268     
+                     269     ;*******************************************************************************
+                     270     ; Function Name  : __GetBASEPRI
+                     271     ; Description    : Assembler function to get the Base Priority value.
+                     272     ; Input          : None 
+                     273     ; Return         : - r0 : Base Priority value 
+                     274     ;*******************************************************************************
+                     275     __GetBASEPRI
+*** _________________________^
+*** ERROR #A9 IN 275 (cortexm3_macro.s, LINE 275): SYNTAX ERROR
+                     276     
+A51 MACRO ASSEMBLER  CORTEXM3_MACRO                                                       06/03/2012 17:04:56 PAGE     8
+
+                     277       MRS r0, BASEPRI_MAX
+*** ___________________________^
+*** ERROR #A9 IN 277 (cortexm3_macro.s, LINE 277): SYNTAX ERROR
+                     278       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 278 (cortexm3_macro.s, LINE 278): SYNTAX ERROR
+                     279     
+                     280     ;*******************************************************************************
+                     281     ; Function Name  : __REV_HalfWord
+                     282     ; Description    : Reverses the byte order in HalfWord(16-bit) input variable.
+                     283     ; Input          : - r0 : specifies the input variable
+                     284     ; Return         : - r0 : holds tve variable value after byte reversing.
+                     285     ;*******************************************************************************
+                     286     __REV_HalfWord 
+*** _________________________^
+*** ERROR #A9 IN 286 (cortexm3_macro.s, LINE 286): SYNTAX ERROR
+                     287      
+                     288       REV16 r0, r0
+*** ___________________________^
+*** ERROR #A9 IN 288 (cortexm3_macro.s, LINE 288): SYNTAX ERROR
+                     289       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 289 (cortexm3_macro.s, LINE 289): SYNTAX ERROR
+                     290     
+                     291     ;*******************************************************************************
+                     292     ; Function Name  : __REV_Word
+                     293     ; Description    : Reverses the byte order in Word(32-bit) input variable.
+                     294     ; Input          : - r0 : specifies the input variable
+                     295     ; Return         : - r0 : holds tve variable value after byte reversing.
+                     296     ;*******************************************************************************
+                     297     __REV_Word 
+*** _________________________^
+*** ERROR #A9 IN 297 (cortexm3_macro.s, LINE 297): SYNTAX ERROR
+                     298      
+                     299       REV r0, r0
+*** ___________________________^
+*** ERROR #A9 IN 299 (cortexm3_macro.s, LINE 299): SYNTAX ERROR
+                     300       BX r14
+*** ___________________________^
+*** ERROR #A9 IN 300 (cortexm3_macro.s, LINE 300): SYNTAX ERROR
+                     301         
+                     302       END
+                               
+                             ;******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE*****
+A51 MACRO ASSEMBLER  CORTEXM3_MACRO                                                       06/03/2012 17:04:56 PAGE     9
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ALIGN. . . . . . .    ----   -----       
+AREA . . . . . . .    ----   -----       
+BASEPRI. . . . . .    ----   -----       
+BASEPRI_MAX. . . .    ----   -----       
+BX . . . . . . . .    ----   -----       
+CONTROL. . . . . .    ----   -----       
+CPSID. . . . . . .    ----   -----       
+CPSIE. . . . . . .    ----   -----       
+DMB. . . . . . . .    ----   -----       
+DSB. . . . . . . .    ----   -----       
+EXPORT . . . . . .    ----   -----       
+F. . . . . . . . .    ----   -----       
+FAULTMASK. . . . .    ----   -----       
+I. . . . . . . . .    ----   -----       
+ISB. . . . . . . .    ----   -----       
+MRS. . . . . . . .    ----   -----       
+MSP. . . . . . . .    ----   -----       
+MSR. . . . . . . .    ----   -----       
+PRESERVE8. . . . .    ----   -----       
+PRIMASK. . . . . .    ----   -----       
+PSP. . . . . . . .    ----   -----       
+R14. . . . . . . .    ----   -----       
+READONLY . . . . .    ----   -----       
+REQUIRE8 . . . . .    ----   -----       
+REV. . . . . . . .    ----   -----       
+REV16. . . . . . .    ----   -----       
+SEV. . . . . . . .    ----   -----       
+SVC. . . . . . . .    ----   -----       
+TEXT . . . . . . .    ----   -----       
+THUMB. . . . . . .    ----   -----       
+WFE. . . . . . . .    ----   -----       
+WFI. . . . . . . .    ----   -----       
+__BASEPRICONFIG. .    ----   -----       
+__DMB. . . . . . .    ----   -----       
+__DSB. . . . . . .    ----   -----       
+__GETBASEPRI . . .    ----   -----       
+__ISB. . . . . . .    ----   -----       
+__MRS_CONTROL. . .    ----   -----       
+__MRS_MSP. . . . .    ----   -----       
+__MRS_PSP. . . . .    ----   -----       
+__MSR_CONTROL. . .    ----   -----       
+__MSR_MSP. . . . .    ----   -----       
+__MSR_PSP. . . . .    ----   -----       
+__READ_FAULTMASK .    ----   -----       
+__READ_PRIMASK . .    ----   -----       
+__RESETFAULTMASK .    ----   -----       
+__RESETPRIMASK . .    ----   -----       
+__REV_HALFWORD . .    ----   -----       
+__REV_WORD . . . .    ----   -----       
+__SETFAULTMASK . .    ----   -----       
+__SETPRIMASK . . .    ----   -----       
+__SEV. . . . . . .    ----   -----       
+__SVC. . . . . . .    ----   -----       
+__WFE. . . . . . .    ----   -----       
+__WFI. . . . . . .    ----   -----       
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 97 ERROR(S)
+A51 MACRO ASSEMBLER  CORTEXM3_MACRO                                                       06/03/2012 17:04:56 PAGE    10
+

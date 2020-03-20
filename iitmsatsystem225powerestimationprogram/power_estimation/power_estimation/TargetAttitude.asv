@@ -1,0 +1,9 @@
+function DCM=TargetAttitude(eB) 
+%theta=0 
+%output is DCM from ECEF to Body-Fixed
+en=[0;0;1]; %nadir vector
+x_new=eB/sqrt(sum(eB.*eB))
+y_new=cross(en,x_new)
+z_new=cross(x_new,y_new)
+DCM=[x_new y_new z_new]'
+end

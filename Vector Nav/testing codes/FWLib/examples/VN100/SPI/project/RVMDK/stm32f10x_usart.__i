@@ -1,0 +1,1 @@
+"..\..\library\src\stm32f10x_usart.c" DEBUG OBJECTEXTEND PRINT(.\stm32f10x_usart.lst) OBJECT(.\stm32f10x_usart.obj)

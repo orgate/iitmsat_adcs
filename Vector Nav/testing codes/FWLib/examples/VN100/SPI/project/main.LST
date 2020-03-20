@@ -1,0 +1,1001 @@
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 1   
+
+
+C51 COMPILER V9.05, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\main.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\main.c DEBUG OBJECTEXTEND OBJECT(.\main.obj)
+
+line level    source
+
+   1          /****************** (C) COPYRIGHT 2009 VectorNav Technologies ******************
+   2          * File Name          : main.c
+   3          * Author             : John Brashear
+   4          * Version            : V1.0.0
+   5          * Date               : 07/14/2009
+   6          * Description        : The purpose of this program is to demonstrate a sucessful
+   7          *                      SPI transaction with the VN-100 module. The program when
+   8          *                      installed on the STM32F10B evaluation board will poll the
+   9          *                      Yaw, Pitch, and Roll register from the VN-100 at a
+  10          *                      frequency of 10Hz.
+  11          ********************************************************************************
+  12          * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  13          * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
+  14          * AS A RESULT, VECTORNAV SHALL NOT BE HELD LIABLE FOR ANY DIRECT, INDIRECT OR
+  15          * CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE CONTENT OF
+  16          * SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING INFORMATION 
+  17          * CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  18          *******************************************************************************/
+  19          
+  20          /* Includes ------------------------------------------------------------------*/
+  21          #include "stm32f10x_lib.h"
+*** WARNING C318 IN LINE 21 OF ..\main.c: can't open file 'stm32f10x_lib.h'
+  22          #include "SysClock.h"
+*** WARNING C318 IN LINE 7 OF ..\SysClock.h: can't open file 'stm32f10x_lib.h'
+*** ERROR C141 IN LINE 15 OF ..\SysClock.h: syntax error near 'timeSpan', expected ')'
+  23          #include "VN_lib.h"
+*** WARNING C322 IN LINE 113 OF ..\VN_math.h: unknown identifier
+*** ERROR C141 IN LINE 38 OF ..\VN_user.h: syntax error near ')'
+  24          #include <stdio.h>
+  25          
+  26          /* Local includes ------------------------------------------------------------*/
+  27          /* Private typedef -----------------------------------------------------------*/
+  28          /* Private define ------------------------------------------------------------*/
+  29          #define DELAY                                                   1e3
+  30          
+  31          /* Private macro -------------------------------------------------------------*/
+  32          /* Private variables ---------------------------------------------------------*/
+  33          
+  34          VN100_SPI_Packet* ReturnPacket;
+  35          char model[12]; /* Sensor model */
+  36          unsigned long int revision; /* Hardware revision */
+  37          unsigned long int serial[3]; /* Serial number */
+  38          unsigned long int version; /* Firmware version */
+  39          VN100_BaudType baud; /* Serial baud rate */
+  40          VN100_ADORType ador; /* Serial Async Data Output Register */
+  41          VN100_ADOFType adof; /* Serial Async Data Output Frequency */
+  42          float ypr[3]; /* yaw, pitch, roll */
+  43          float q[4]; /* quaterion */
+  44          float mag[3]; /* magnetic */
+  45          float acc[3]; /* acceleration */
+  46          float gyr[3]; /* angular rates */
+  47          
+  48          /* Directional Cosine Matrix data structure */
+  49          float dcm_data[9] = {0};
+  50          float *dcm_ptr[3] = {&dcm_data[0], &dcm_data[3], &dcm_data[6]};
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 2   
+
+  51          float **dcm = dcm_ptr;
+  52          
+  53          float sig[10]; /* Tuning parameters */
+  54          float hsi[12]; /* Hard/Soft Iron */
+  55          float act[12]; /* Accelerometer compensation */
+  56          float ref[9]; /* Reference vectors */
+  57          float rfr[12]; /* Reference frame rotation */
+  58          float atp[4]; /* Automatic tuning parameters */
+  59          VN100_AccGainType acg; /* Accelerometer gain */
+  60          
+  61          /* Quaternions */
+  62          float q1[4], q2[4], q3[4];
+  63          
+  64          /* Directional Cosine Matrix data structure */
+  65          float dcm2_data[9] = {0};
+  66          float *dcm2_ptr[3] = {&dcm2_data[0], &dcm2_data[3], &dcm2_data[6]};
+  67          float **dcm2 = dcm2_ptr;
+  68          
+  69          /* SPI Initialization Structure */
+  70          SPI_InitTypeDef   SPI_InitStructure;
+  71          
+  72          /* UART Initialization Structure */
+  73          USART_InitTypeDef USART_InitStructure;
+  74          
+  75          
+  76          ErrorStatus HSEStartUpStatus;
+  77          
+  78          typedef struct SPITestType
+  79          {
+  80                  char title[128];
+  81                  unsigned long  bytes;
+  82                  unsigned char  TX[128];
+  83                  unsigned char  RX[128];
+  84          } SPITestType;
+  85          
+  86          /* Support functions ---------------------------------------------------------*/
+  87          void RCC_Configuration(void);
+  88          void GPIO_Configuration(void);
+  89          void NVIC_Configuration(void);
+  90          void Serial_SendByte(char byte);
+  91          void Serial_SendHexBytes(u32 bytes, u8 *buffer);
+  92          int fputc(int ch, FILE *f);
+  93          
+  94          /*******************************************************************************
+  95          * Function Name  : main
+  96          * Description    : Main program
+  97          * Input          : None
+  98          * Output         : None
+  99          * Return         : None
+ 100          *******************************************************************************/
+ 101          int main(void)
+ 102          {
+ 103              printf("The program started");
+ 104                  u32 size;
+ 105                  u8 reg;
+ 106          
+ 107          
+ 108          #ifdef DEBUG
+                debug();
+              #endif
+ 111          
+ 112            /* System clocks configuration ---------------------------------------------*/
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 3   
+
+ 113            RCC_Configuration();
+ 114          
+ 115            /* NVIC configuration ------------------------------------------------------*/
+ 116            NVIC_Configuration();
+ 117          
+ 118            /* GPIO configuration ------------------------------------------------------*/
+ 119            GPIO_Configuration();
+ 120                  
+ 121                  /* Configure SysClock */
+ 122                  
+ 123          /* USART1 configuration ------------------------------------------------------*/
+ 124            /* USART1 configured as follow:
+ 125                  - BaudRate = 115200 baud  
+ 126                  - Word Length = 8 Bits
+ 127                  - One Stop Bit
+ 128                  - No parity
+ 129                  - Hardware flow control disabled (RTS and CTS signals)
+ 130                  - Receive and transmit enabled
+ 131            */
+ 132            USART_InitStructure.USART_BaudRate = 115200;
+ 133            USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+ 134            USART_InitStructure.USART_StopBits = USART_StopBits_1;
+ 135            USART_InitStructure.USART_Parity = USART_Parity_No;
+ 136            USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+ 137            USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+ 138          
+ 139            /* Configure USART1 */
+ 140            USART_Init(USART1, &USART_InitStructure);  
+ 141            
+ 142                  /* Enable the USART1 */
+ 143            USART_Cmd(USART1, ENABLE);
+ 144          
+ 145            /* 1st phase: SPI1 Master and SPI2 Slave */
+ 146            /* SPI1 Config -------------------------------------------------------------*/
+ 147            SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+ 148            SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+ 149            SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
+ 150            SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
+ 151            SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
+ 152            SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+ 153            SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_64;
+ 154            SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+ 155            SPI_InitStructure.SPI_CRCPolynomial = 7;
+ 156            SPI_Init(SPI1, &SPI_InitStructure);
+ 157                  
+ 158                  /* Enable SPI1 */
+ 159            SPI_Cmd(SPI1, ENABLE);
+ 160                  
+ 161                  /* Delay 1s */
+ 162                  VN_Delay(1e6);
+ 163                  
+ 164                  printf("\n\n------- Starting SPI Test Script -------\n\n");
+ 165                  
+ 166                  /* Model Number */
+ 167                  size = 12*4+4;
+ 168                  reg = 1;
+ 169                  printf("Read Register %u - Model\n", reg);      
+ 170                  ReturnPacket = VN100_SPI_GetModel(0, model);
+ 171                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 172                  printf("Model: %s\n\n", model);
+ 173                  
+ 174                  VN_Delay(DELAY);
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 4   
+
+ 175                  
+ 176                  /* Hardware Revision */
+ 177                  size = 4+4;
+ 178                  reg = 2;
+ 179                  printf("Read Register %u - Hardware Revision\n", reg);  
+ 180                  ReturnPacket = VN100_SPI_GetHWRev(0, &revision);
+ 181                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 182                  printf("Hardware Revision: %u\n\n", revision);
+ 183                  
+ 184                  VN_Delay(DELAY);
+ 185                          
+ 186                  /* Model Number */
+ 187                  size = 12*4+4;
+ 188                  reg = 3;
+ 189                  printf("Read Register %u - Model Number\n", reg);       
+ 190                  ReturnPacket = VN100_SPI_GetSerial(0, serial);
+ 191                  printf("Model Number: %08X%08X%08X\n\n", serial[0], serial[1], serial[2]);
+ 192                  
+ 193                  VN_Delay(DELAY);
+ 194                          
+ 195                  /* Firmware version */
+ 196                  size = 4+4;
+ 197                  reg = 4;
+ 198                  printf("Read Register %u - Firmware version\n", reg);   
+ 199                  ReturnPacket = VN100_SPI_GetFWVer(0, &version);
+ 200                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 201                  printf("Firmware Version: %u\n\n", version);    
+ 202                  
+ 203                  VN_Delay(DELAY);
+ 204                          
+ 205                  /* Serial Baud Rate */
+ 206                  size = 4+4;
+ 207                  reg = 5;
+ 208                  printf("Read Register %u - Serial Baud Rate\n", reg);
+ 209                  ReturnPacket = VN100_SPI_GetBaudRate(0, &baud);
+ 210                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 211                  printf("Serial Baud Rate: %u\n\n", baud);
+ 212                  
+ 213                  VN_Delay(DELAY);
+ 214                          
+ 215                  /* Async Data Output Type */
+ 216                  size = 4+4;
+ 217                  reg = 6;
+ 218                  printf("Read Register %u - Async Data Output Type\n", reg);
+ 219                  ReturnPacket = VN100_SPI_GetADOR(0, &ador);
+ 220                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 221                  printf("Async Data Output Type: %u\n\n", ador);
+ 222                  
+ 223                  VN_Delay(DELAY);
+ 224                          
+ 225                  /* Async Data Output Frequency */
+ 226                  size = 4+4;
+ 227                  reg = 7;
+ 228                  printf("Read Register %u - Async Data Output Frequency\n", reg);
+ 229                  ReturnPacket = VN100_SPI_GetADOF(0, &adof);
+ 230                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 231                  printf("Async Data Output Frequency: %u\n\n", adof);
+ 232                  
+ 233                  
+ 234                  VN_Delay(DELAY);
+ 235                          
+ 236                  /* Attitude (Yaw, Pitch, Roll) */
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 5   
+
+ 237                  size = 3*4+4;
+ 238                  reg = 8;
+ 239                  printf("Read Register %u - Attitude (Yaw, Pitch, Roll)\n", reg);
+ 240                  ReturnPacket = VN100_SPI_GetYPR(0, &ypr[0], &ypr[1], &ypr[2]);
+ 241                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 242                  printf("Yaw: %+07.2f\nPitch: %+07.2f\nRoll: %+07.2f\n\n", ypr[0], ypr[1], ypr[2]);
+ 243                  
+ 244                  VN_Delay(DELAY);
+ 245                                  
+ 246                  /* Attitude (Quaternion) */
+ 247                  size = 4*4+4;
+ 248                  reg = 9;
+ 249                  printf("Read Register %u - Attitude (Quaternion)\n", reg);
+ 250                  ReturnPacket = VN100_SPI_GetQuat(0, q);
+ 251                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 252                  printf("Q1: %+09.6f\nQ2: %+09.6f\nQ3: %+09.6f\nQ4: %+09.6f\n\n", q[0], q[1], q[2], q[3]);
+ 253                  
+ 254                  VN_Delay(DELAY);
+ 255                          
+ 256                  /* Quaternion and Magnetic */
+ 257                  size = 7*4+4;
+ 258                  reg = 10;
+ 259                  printf("Read Register %u - Quaternion and Magnetic\n", reg);
+ 260                  ReturnPacket = VN100_SPI_GetQuatMag(0, q, mag);
+ 261                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 262                  printf("Q1: %+09.6f\nQ2: %+09.6f\nQ3: %+09.6f\nQ4: %+09.6f\n", q[0], q[1], q[2], q[3]);
+ 263                  printf("MX: %+07.4f\nMY: %+07.4f\nMZ: %+07.4f\n\n",  mag[0], mag[1], mag[2]);   
+ 264                  
+ 265                  VN_Delay(DELAY);
+ 266                          
+ 267                  /* Quaternion and Acceleration */
+ 268                  size = 7*4+4;
+ 269                  reg = 11;
+ 270                  printf("Read Register %u - Quaternion and Acceleration\n", reg);
+ 271                  ReturnPacket = VN100_SPI_GetQuatAcc(0, q, acc);
+ 272                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 273                  printf("Q1: %+09.6f\nQ2: %+09.6f\nQ3: %+09.6f\nQ4: %+09.6f\n", q[0], q[1], q[2], q[3]);
+ 274                  printf("AX: %+07.3f\nAY: %+07.3f\nAZ: %+07.3f\n\n",  acc[0], acc[1], acc[2]);   
+ 275                  
+ 276                  VN_Delay(DELAY);
+ 277                          
+ 278                  /* Quaternion and Angular Rates */
+ 279                  size = 7*4+4;
+ 280                  reg = 12;
+ 281                  printf("Read Register %u - Quaternion and Angular Rates\n", reg);
+ 282                  ReturnPacket = VN100_SPI_GetQuatRates(0, q, gyr);
+ 283                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 284                  printf("Q1: %+09.6f\nQ2: %+09.6f\nQ3: %+09.6f\nQ4: %+09.6f\n", q[0], q[1], q[2], q[3]);
+ 285                  printf("GX: %+08.4f\nGY: %+08.4f\nGZ: %+08.4f\n\n", gyr[0], gyr[1], gyr[2]);    
+ 286                  
+ 287                  VN_Delay(DELAY);
+ 288                          
+ 289                  /* Quaternion, Magnetic and Acceleration */
+ 290                  size = 10*4+4;
+ 291                  reg = 13;
+ 292                  printf("Read Register %u - Quaternion, Magnetic and Acceleration\n", reg);
+ 293                  ReturnPacket = VN100_SPI_GetQuatMagAcc(0, q, mag, acc);
+ 294                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 295                  printf("Q1: %+09.6f\nQ2: %+09.6f\nQ3: %+09.6f\nQ4: %+09.6f\n", q[0], q[1], q[2], q[3]);
+ 296                  printf("MX: %+07.4f\nMY: %+07.4f\nMZ: %+07.4f\n\n",  mag[0], mag[1], mag[2]);
+ 297                  printf("AX: %+07.3f\nAY: %+07.3f\nAZ: %+07.3f\n\n",  acc[0], acc[1], acc[2]);
+ 298                  
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 6   
+
+ 299                  VN_Delay(DELAY);
+ 300                          
+ 301                  /* Quaternion, Acceleration and Angular Rates */
+ 302                  size = 10*4+4;
+ 303                  reg = 14;
+ 304                  printf("Read Register %u - Quaternion, Acceleration and Angular Rates\n", reg);
+ 305                  ReturnPacket = VN100_SPI_GetQuatAccRates(0, q, acc, gyr);
+ 306                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 307                  printf("Q1: %+09.6f\nQ2: %+09.6f\nQ3: %+09.6f\nQ4: %+09.6f\n", q[0], q[1], q[2], q[3]);
+ 308                  printf("AX: %+07.3f\nAY: %+07.3f\nAZ: %+07.3f\n\n",  acc[0], acc[1], acc[2]);
+ 309                  printf("GX: %+08.4f\nGY: %+08.4f\nGZ: %+08.4f\n\n", gyr[0], gyr[1], gyr[2]);    
+ 310                  
+ 311                  VN_Delay(DELAY);
+ 312                          
+ 313                  /* Quaternion, Magnetic, Acceleration and Angular Rates */
+ 314                  size = 13*4+4;
+ 315                  reg = 15;
+ 316                  printf("Read Register %u - Quaternion, Magnetic, Acceleration and Angular Rates\n", reg);
+ 317                  ReturnPacket = VN100_SPI_GetQuatMagAccRates(0, q, mag, acc, gyr);
+ 318                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 319                  printf("Q1: %+09.6f\nQ2: %+09.6f\nQ3: %+09.6f\nQ4: %+09.6f\n", q[0], q[1], q[2], q[3]);
+ 320                  printf("MX: %+07.4f\nMY: %+07.4f\nMZ: %+07.4f\n\n",  mag[0], mag[1], mag[2]);   
+ 321                  printf("AX: %+07.3f\nAY: %+07.3f\nAZ: %+07.3f\n\n",  acc[0], acc[1], acc[2]);
+ 322                  printf("GX: %+08.4f\nGY: %+08.4f\nGZ: %+08.4f\n\n", gyr[0], gyr[1], gyr[2]);    
+ 323                  
+ 324                  VN_Delay(DELAY);
+ 325                          
+ 326                  /* Attitude (Directional Cosine Matrix) */
+ 327                  size = 9*4+4;
+ 328                  reg = 16;
+ 329                  printf("Read Register %u - Attitude (Directional Cosine Matrix)\n", reg);
+ 330                  ReturnPacket = VN100_SPI_GetDCM(0, dcm);
+ 331                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 332                  printf("C11: %+13.6E\nC12: %+13.6E\nC13: %+13.6E\n", dcm[0][0], dcm[0][1], dcm[0][2]);
+ 333                  printf("C21: %+13.6E\nC22: %+13.6E\nC23: %+13.6E\n", dcm[1][0], dcm[1][1], dcm[1][2]);
+ 334                  printf("C31: %+13.6E\nC23: %+13.6E\nC33: %+13.6E\n\n", dcm[2][0], dcm[2][1], dcm[2][2]);
+ 335                  
+ 336                  VN_Delay(DELAY);
+ 337                          
+ 338                  /* Magnetic Measurements */
+ 339                  size = 3*4+4;
+ 340                  reg = 17;
+ 341                  printf("Read Register %u - Magnetic Measurements\n", reg);
+ 342                  ReturnPacket = VN100_SPI_GetMag(0, mag);
+ 343                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 344                  printf("MX: %+07.4f\nMY: %+07.4f\nMZ: %+07.4f\n\n",  mag[0], mag[1], mag[2]);
+ 345                  
+ 346                  VN_Delay(DELAY);
+ 347                          
+ 348                  /* Acceleration Measurements */
+ 349                  size = 3*4+4;
+ 350                  reg = 18;
+ 351                  printf("Read Register %u - Acceleration Measurements\n", reg);
+ 352                  ReturnPacket = VN100_SPI_GetAcc(0, acc);
+ 353                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 354                  printf("AX: %+07.3f\nAY: %+07.3f\nAZ: %+07.3f\n\n",  acc[0], acc[1], acc[2]);
+ 355                          
+ 356                  VN_Delay(DELAY);
+ 357                          
+ 358                  /* Angular Rate Measurements */
+ 359                  size = 3*4+4;
+ 360                  reg = 19;
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 7   
+
+ 361                  printf("Read Register %u - Angular Rate Measurements\n", reg);
+ 362                  ReturnPacket = VN100_SPI_GetRates(0, gyr);
+ 363                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 364                  printf("GX: %+08.4f\nGY: %+08.4f\nGZ: %+08.4f\n\n", gyr[0], gyr[1], gyr[2]);
+ 365                          
+ 366                  VN_Delay(DELAY);        
+ 367                  
+ 368                  /* Magnetic, Acceleration and Angular Rates */
+ 369                  size = 9*4+4;
+ 370                  reg = 20;
+ 371                  printf("Read Register %u - Magnetic, Acceleration and Angular Rates\n", reg);
+ 372                  ReturnPacket = VN100_SPI_GetMagAccRates(0, mag, acc, gyr);
+ 373                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 374                  printf("MX: %+07.4f\nMY: %+07.4f\nMZ: %+07.4f\n\n",  mag[0], mag[1], mag[2]);
+ 375                  printf("AX: %+07.3f\nAY: %+07.3f\nAZ: %+07.3f\n\n",  acc[0], acc[1], acc[2]);
+ 376                  printf("GX: %+08.4f\nGY: %+08.4f\nGZ: %+08.4f\n\n", gyr[0], gyr[1], gyr[2]);
+ 377                          
+ 378                  VN_Delay(DELAY);        
+ 379                  
+ 380                  /* Magnetic and Gravity Reference */
+ 381                  size = 6*4+4;
+ 382                  reg = 21;
+ 383                  printf("Read Register %u - Magnetic and Gravity References\n", reg);
+ 384                  ReturnPacket = VN100_SPI_GetMagAccRef(0, mag, acc);
+ 385                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 386                  printf("MRX: %+13.6E\nMRY: %+13.6E\nMRZ: %+13.6E\n",  mag[0], mag[1], mag[2]);
+ 387                  printf("GRX: %+13.6E\nGRY: %+13.6E\nGRZ: %+13.6E\n\n",  acc[0], acc[1], acc[2]);
+ 388                          
+ 389                  VN_Delay(DELAY);        
+ 390                  
+ 391                  /* Filter Measurements Variance Parameters */
+ 392                  size = 10*4+4;
+ 393                  reg = 22;
+ 394                  printf("Read Register %u - Filter Measurements Variance Parameters\n", reg);
+ 395                  ReturnPacket = VN100_SPI_GetFiltMeasVar(0, sig);
+ 396                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 397                  printf("R1: %+13.6E\nR2: %+13.6E\nR3: %+13.6E\n",  sig[0], sig[1], sig[2]);
+ 398                  printf("R4: %+13.6E\nR5: %+13.6E\nR6: %+13.6E\n",  sig[3], sig[4], sig[5]);
+ 399                  printf("R7: %+13.6E\nR8: %+13.6E\nR9: %+13.6E\n",  sig[6], sig[7], sig[8]);
+ 400                  printf("R10: %+13.6E\n\n", sig[9]);
+ 401                          
+ 402                  VN_Delay(DELAY);        
+ 403                  
+ 404                  /* Magnetic Hard/Soft Iron Compensation Parameters */
+ 405                  size = 12*4+4;
+ 406                  reg = 23;
+ 407                  printf("Read Register %u - Magnetic Hard/Soft Iron Compensation Parameters\n", reg);
+ 408                  ReturnPacket = VN100_SPI_GetHardSoftIronComp(0, hsi);
+ 409                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 410                  printf("H01: %+13.6E\nH02: %+13.6E\nH03: %+13.6E\n",  hsi[0], hsi[1], hsi[2]);
+ 411                  printf("H04: %+13.6E\nH05: %+13.6E\nH06: %+13.6E\n",  hsi[3], hsi[4], hsi[5]);
+ 412                  printf("H07: %+13.6E\nH08: %+13.6E\nH09: %+13.6E\n",  hsi[6], hsi[7], hsi[8]);
+ 413                  printf("H10: %+13.6E\nH11: %+13.6E\nH12: %+13.6E\n\n",  hsi[9], hsi[10], hsi[11]);
+ 414                  
+ 415                  VN_Delay(DELAY);        
+ 416                  
+ 417                  /* Disturbance Tuning Parameters - Read */
+ 418                  size = 4*4+4;
+ 419                  reg = 24;
+ 420                  printf("Read Register %u - Filter Active Tuning Parameters\n", reg);
+ 421                  ReturnPacket = VN100_SPI_GetFiltActTuning(0, &atp[0], &atp[1], &atp[2], &atp[3]);
+ 422                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 8   
+
+ 423                  printf("T1: %+13.6E\nT2: %+13.6E\nT3: %+13.6E\nT4: %+13.6E\n\n",  atp[0], atp[1], atp[2], atp[3]);
+ 424                  
+ 425                  VN_Delay(DELAY);
+ 426                  
+ 427                  /* Accelerometer Compensation Parameters - Read */
+ 428                  size = 12*4+4;
+ 429                  reg = 25;
+ 430                  printf("Read Register %u - Accelerometer Compensation Parameters\n", reg);
+ 431                  ReturnPacket = VN100_SPI_GetAccComp(0, act);
+ 432                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 433                  printf("A01: %+13.6E\nA02: %+13.6E\nA03: %+13.6E\n",  act[0], act[1], act[2]);
+ 434                  printf("A04: %+13.6E\nA05: %+13.6E\nA06: %+13.6E\n",  act[3], act[4], act[5]);
+ 435                  printf("A07: %+13.6E\nA08: %+13.6E\nA09: %+13.6E\n",  act[6], act[7], act[8]);
+ 436                  printf("A10: %+13.6E\nA11: %+13.6E\nA12: %+13.6E\n\n",  act[9], act[10], act[11]);
+ 437                          
+ 438                  VN_Delay(DELAY);
+ 439                  
+ 440                  /* Reference Frame Rotation - Read */
+ 441                  size = 12*4+4;
+ 442                  reg = 26;
+ 443                  printf("Read Register %u - Reference Frame Rotation\n", reg);
+ 444                  ReturnPacket = VN100_SPI_GetRefFrameRot(0, rfr);
+ 445                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 446                  printf("R01: %+13.6E\nR02: %+13.6E\nR03: %+13.6E\n",  rfr[0], rfr[1], rfr[2]);
+ 447                  printf("R04: %+13.6E\nR05: %+13.6E\nR06: %+13.6E\n",  rfr[3], rfr[4], rfr[5]);
+ 448                  printf("R07: %+13.6E\nR08: %+13.6E\nR09: %+13.6E\n",  rfr[6], rfr[7], rfr[8]);
+ 449                  printf("R10: %+13.6E\nR11: %+13.6E\nR12: %+13.6E\n\n",  rfr[9], rfr[10], rfr[11]);      
+ 450                  
+ 451                  VN_Delay(DELAY);
+ 452                  
+ 453                  
+ 454                  /* Yaw, Pitch, Roll, Magnetic, Acceleration, Angular Rates - Read */
+ 455                  size = 12*4+4;
+ 456                  reg = 27;
+ 457                  printf("Read Register %u - Yaw, Pitch, Roll, Magnetic, Acceleration, Angular Rates\n", reg);
+ 458                  ReturnPacket = VN100_SPI_GetYPRMagAccRates(0, ypr, mag, acc, gyr);
+ 459                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 460                  printf(" Y: %+07.2f\n P: %+07.2f\n R: %+07.2f\n",  ypr[0], ypr[1], ypr[2]);
+ 461                  printf("MX: %+07.4f\nMY: %+07.4f\nMZ: %+07.4f\n",  mag[0], mag[1], mag[2]);
+ 462                  printf("AX: %+07.3f\nAY: %+07.3f\nAZ: %+07.3f\n",  acc[0], acc[1], acc[2]);
+ 463                  printf("GX: %+08.4f\nGY: %+08.4f\nGZ: %+08.4f\n\n",  gyr[0], gyr[1], gyr[2]);
+ 464                          
+ 465                  VN_Delay(DELAY);
+ 466                  
+ 467                  /* Accelerometer Gain - Read */
+ 468                  size = 1*4+4;
+ 469                  reg = 28;
+ 470                  printf("Read Register %u - Accelerometer Gain\n", reg);
+ 471                  ReturnPacket = VN100_SPI_GetAccGain(0, &acg);
+ 472                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 473                  printf("A: %u\n\n",  acg);
+ 474                  
+ 475                  VN_Delay(DELAY);
+ 476                          
+ 477          
+ 478          
+ 479                  
+ 480                  /* Serial Baud Rate - Write */
+ 481                  size = 4+4;
+ 482                  reg = 5;
+ 483                  printf("Write Register %u - Serial Baud Rate\n", reg);
+ 484                  ReturnPacket = VN100_SPI_SetBaudRate(0, baud);
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 9   
+
+ 485                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 486                  printf("Serial Baud Rate: %u\n\n", baud);
+ 487                  
+ 488                  VN_Delay(1e5);
+ 489                          
+ 490                  /* Serial Baud Rate - Read */
+ 491                  size = 4+4;
+ 492                  reg = 5;
+ 493                  printf("Read Register %u - Serial Baud Rate\n", reg);
+ 494                  ReturnPacket = VN100_SPI_GetBaudRate(0, &baud);
+ 495                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 496                  printf("Serial Baud Rate: %u\n\n", baud);
+ 497                  
+ 498                  VN_Delay(DELAY);
+ 499                          
+ 500                  /* Async Data Output Register - Write */
+ 501                  size = 4+4;
+ 502                  reg = 6;
+ 503                  printf("Write Register %u - Async Data Output Type\n", reg);
+ 504                  ReturnPacket = VN100_SPI_SetADOR(0, ador);
+ 505                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 506                  printf("Async Data Output Type: %u\n\n", ador);
+ 507                  
+ 508                  VN_Delay(1e5);
+ 509                          
+ 510                  /* Async Data Output Register - Read */
+ 511                  size = 4+4;
+ 512                  reg = 6;
+ 513                  printf("Read Register %u - Async Data Output Type\n", reg);
+ 514                  ReturnPacket = VN100_SPI_GetADOR(0, &ador);
+ 515                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 516                  printf("Async Data Output Type: %u\n\n", ador);
+ 517                  
+ 518                  VN_Delay(DELAY);
+ 519                          
+ 520                  /* Async Data Output Frequency - Write */
+ 521                  size = 4+4;
+ 522                  reg = 7;
+ 523                  printf("Write Register %u - Async Data Output Freq\n", reg);
+ 524                  ReturnPacket = VN100_SPI_SetADOF(0, adof);
+ 525                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 526                  printf("Async Data Output Type: %u\n\n", adof);
+ 527                  
+ 528                  VN_Delay(1e5);
+ 529                          
+ 530                  /* Async Data Output Frequency - Read */
+ 531                  size = 4+4;
+ 532                  reg = 7;
+ 533                  printf("Read Register %u - Async Data Output Freq\n", reg);
+ 534                  ReturnPacket = VN100_SPI_GetADOF(0, &adof);
+ 535                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 536                  printf("Async Data Output Type: %u\n\n", adof);
+ 537                  
+ 538                  VN_Delay(DELAY);
+ 539                          
+ 540                  /* Magnetic and Gravity Reference - Write */
+ 541                  size = 6*4+4;
+ 542                  reg = 21;
+ 543                  printf("Read Register %u - Magnetic and Gravity References\n", reg);
+ 544                  ReturnPacket = VN100_SPI_SetMagAccRef(0, mag, acc);
+ 545                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 546                  printf("MRX: %+13.6E\nMRY: %+13.6E\nMRZ: %+13.6E\n",  mag[0], mag[1], mag[2]);
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 10  
+
+ 547                  printf("GRX: %+13.6E\nGRY: %+13.6E\nGRZ: %+13.6E\n\n",  acc[0], acc[1], acc[2]);
+ 548                  
+ 549                  VN_Delay(DELAY);
+ 550                          
+ 551                  /* Magnetic and Gravity Reference - Read */
+ 552                  size = 6*4+4;
+ 553                  reg = 21;
+ 554                  printf("Read Register %u - Magnetic and Gravity References\n", reg);
+ 555                  ReturnPacket = VN100_SPI_GetMagAccRef(0, mag, acc);
+ 556                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 557                  printf("MRX: %+13.6E\nMRY: %+13.6E\nMRZ: %+13.6E\n",  mag[0], mag[1], mag[2]);
+ 558                  printf("GRX: %+13.6E\nGRY: %+13.6E\nGRZ: %+13.6E\n\n",  acc[0], acc[1], acc[2]);
+ 559                  
+ 560                  VN_Delay(DELAY);        
+ 561          
+ 562                  /* Filter Measurement Variance Parameters - Write */
+ 563                  size = 10*4+4;
+ 564                  reg = 22;
+ 565                  printf("Write Register %u - Filter Measurement Variance Parameters\n", reg);
+ 566                  sig[0] = 1e-9;
+ 567                  sig[1] = 1e-9;
+ 568                  sig[2] = 1e-9;
+ 569                  sig[3] = 1e-9;
+ 570                  sig[4] = 2e-6;
+ 571                  sig[5] = 2e-6;
+ 572                  sig[6] = 2e-6;
+ 573                  sig[7] = 5e-5;
+ 574                  sig[8] = 5e-5;
+ 575                  sig[9] = 5e-5;  
+ 576                  ReturnPacket = VN100_SPI_SetFiltMeasVar(0, sig);
+ 577                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 578                  printf(" V1: %+13.6E\n V2: %+13.6E\n V3: %+13.6E\n",  sig[0], sig[1], sig[2]);
+ 579                  printf(" V4: %+13.6E\n V5: %+13.6E\n V6: %+13.6E\n",  sig[3], sig[4], sig[5]);
+ 580                  printf(" V7: %+13.6E\n V8: %+13.6E\n V9: %+13.6E\n",  sig[6], sig[7], sig[8]);
+ 581                  printf("V10: %+13.6E\n\n",  sig[9]);
+ 582                  
+ 583                  VN_Delay(DELAY);
+ 584                          
+ 585                  /* Filter Measurement Variance Parameters - Read */
+ 586                  size = 10*4+4;
+ 587                  reg = 22;
+ 588                  printf("Read Register %u - Filter Measurement Variance Parameters\n", reg);
+ 589                  ReturnPacket = VN100_SPI_GetFiltMeasVar(0, sig);
+ 590                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 591                  printf(" V1: %+13.6E\n V2: %+13.6E\n V3: %+13.6E\n",  sig[0], sig[1], sig[2]);
+ 592                  printf(" V4: %+13.6E\n V5: %+13.6E\n V6: %+13.6E\n",  sig[3], sig[4], sig[5]);
+ 593                  printf(" V7: %+13.6E\n V8: %+13.6E\n V9: %+13.6E\n",  sig[6], sig[7], sig[8]);
+ 594                  printf("V10: %+13.6E\n\n",  sig[9]);
+ 595                  
+ 596                  VN_Delay(DELAY);        
+ 597          
+ 598                  /* Magnetic Hard/Soft Iron Compensation Parameters - Write */
+ 599                  size = 12*4+4;
+ 600                  reg = 23;
+ 601                  printf("Write Register %u - Magnetic Hard/Soft Iron Compensation Parameters\n", reg);
+ 602                  hsi[0] = 1.0;
+ 603                  hsi[1] = 0.01;
+ 604                  hsi[2] = 0.01;
+ 605                  hsi[3] = -0.02;
+ 606                  hsi[4] = 1.0;
+ 607                  hsi[5] = 0.0;
+ 608                  hsi[6] = -0.1;
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 11  
+
+ 609                  hsi[7] = 0.1;
+ 610                  hsi[8] = 1.0;
+ 611                  hsi[9] = 0.2;
+ 612                  hsi[10] = 0.1;
+ 613                  hsi[11] = -0.1;
+ 614                  ReturnPacket = VN100_SPI_SetHardSoftIronComp(0, hsi);
+ 615                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 616                  printf(" H1: %+13.6E\n H2: %+13.6E\n H3: %+13.6E\n",  hsi[0], hsi[1], hsi[2]);
+ 617                  printf(" H4: %+13.6E\n H5: %+13.6E\n H6: %+13.6E\n",  hsi[3], hsi[4], hsi[5]);
+ 618                  printf(" H7: %+13.6E\n H8: %+13.6E\n H9: %+13.6E\n",  hsi[6], hsi[7], hsi[8]);
+ 619                  printf("H10: %+13.6E\nH11: %+13.6E\nH12: %+13.6E\n",  hsi[9], hsi[10], hsi[11]);
+ 620                  
+ 621                  VN_Delay(DELAY);
+ 622                          
+ 623                  /* Magnetic Hard/Soft Iron Compensation Parameters */
+ 624                  size = 12*4+4;
+ 625                  reg = 23;
+ 626                  printf("Read Register %u - Magnetic Hard/Soft Iron Compensation Parameters\n", reg);
+ 627                  ReturnPacket = VN100_SPI_GetHardSoftIronComp(0, hsi);
+ 628                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 629                  printf(" H1: %+13.6E\n H2: %+13.6E\n H3: %+13.6E\n",  hsi[0], hsi[1], hsi[2]);
+ 630                  printf(" H4: %+13.6E\n H5: %+13.6E\n H6: %+13.6E\n",  hsi[3], hsi[4], hsi[5]);
+ 631                  printf(" H7: %+13.6E\n H8: %+13.6E\n H9: %+13.6E\n",  hsi[6], hsi[7], hsi[8]);
+ 632                  printf("H10: %+13.6E\nH11: %+13.6E\nH12: %+13.6E\n",  hsi[9], hsi[10], hsi[11]);        
+ 633          
+ 634                  VN_Delay(DELAY);
+ 635                  
+ 636                  /* Filter Active Tuning Parameters - Write */
+ 637                  size = 4*4+4;
+ 638                  reg = 24;
+ 639                  printf("Write Register %u - Filter Active Tuning Parameters\n", reg);
+ 640                  atp[0] = 1.0;
+ 641                  atp[1] = 1.0;
+ 642                  atp[2] = 0.99;
+ 643                  atp[3] = 0.99;
+ 644                  ReturnPacket = VN100_SPI_SetFiltActTuning(0, atp[0], atp[1], atp[2], atp[3]);
+ 645                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 646                  printf("T1: %+13.6E\nT2: %+13.6E\nT3: %+13.6E\nT4: %+13.6E\n\n",  atp[0], atp[1], atp[2], atp[3]);
+ 647                  
+ 648                  VN_Delay(DELAY);
+ 649                  
+ 650                  /* Filter Active Tuning Parameters - Read */
+ 651                  size = 4*4+4;
+ 652                  reg = 24;
+ 653                  printf("Read Register %u - Filter Active Tuning Parameters\n", reg);
+ 654                  ReturnPacket = VN100_SPI_GetFiltActTuning(0, &atp[0], &atp[1], &atp[2], &atp[3]);
+ 655                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 656                  printf("T1: %+13.6E\nT2: %+13.6E\nT3: %+13.6E\nT4: %+13.6E\n\n",  atp[0], atp[1], atp[2], atp[3]);
+ 657                          
+ 658                  VN_Delay(DELAY);
+ 659                  
+ 660                  
+ 661                  /* Accelerometer Compensation - Write */
+ 662                  size = 12*4+4;
+ 663                  reg = 25;
+ 664                  printf("Write Register %u - Accelerometer Compensation\n", reg);
+ 665                  ReturnPacket = VN100_SPI_SetAccComp(0, act);
+ 666                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 667                  printf("A01: %+13.6E\nA02: %+13.6E\nA03: %+13.6E\n",  act[0], act[1], act[2]);
+ 668                  printf("A04: %+13.6E\nA05: %+13.6E\nA06: %+13.6E\n",  act[3], act[4], act[5]);
+ 669                  printf("A07: %+13.6E\nA08: %+13.6E\nA09: %+13.6E\n",  act[6], act[7], act[8]);
+ 670                  printf("A10: %+13.6E\nA11: %+13.6E\nA12: %+13.6E\n\n",  act[9], act[10], act[11]);
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 12  
+
+ 671                  
+ 672                  VN_Delay(DELAY);
+ 673                  
+ 674                  /* Accelerometer Compensation - Read */
+ 675                  size = 12*4+4;
+ 676                  reg = 25;
+ 677                  printf("Read Register %u - Accelerometer Compensation\n", reg);
+ 678                  ReturnPacket = VN100_SPI_GetAccComp(0, act);
+ 679                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 680                  printf("A01: %+13.6E\nA02: %+13.6E\nA03: %+13.6E\n",  act[0], act[1], act[2]);
+ 681                  printf("A04: %+13.6E\nA05: %+13.6E\nA06: %+13.6E\n",  act[3], act[4], act[5]);
+ 682                  printf("A07: %+13.6E\nA08: %+13.6E\nA09: %+13.6E\n",  act[6], act[7], act[8]);
+ 683                  printf("A10: %+13.6E\nA11: %+13.6E\nA12: %+13.6E\n\n",  act[9], act[10], act[11]);
+ 684                          
+ 685                  VN_Delay(DELAY);
+ 686                  
+ 687                  
+ 688                  /* Reference Frame Rotation - Write */
+ 689                  size = 9*4+4;
+ 690                  reg = 26;
+ 691                  printf("Write Register %u - Reference Frame Rotation\n", reg);
+ 692                  rfr[0] = 1.0;
+ 693                  rfr[1] = 0.01;
+ 694                  rfr[2] = 0.01;
+ 695                  rfr[3] = -0.02;
+ 696                  rfr[4] = 1.0;
+ 697                  rfr[5] = 0.0;
+ 698                  rfr[6] = -0.1;
+ 699                  rfr[7] = 0.1;
+ 700                  rfr[8] = 1.0;
+ 701                  ReturnPacket = VN100_SPI_SetRefFrameRot(0, rfr);
+ 702                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 703                  printf("R01: %+13.6E\nR02: %+13.6E\nR03: %+13.6E\n",  rfr[0], rfr[1], rfr[2]);
+ 704                  printf("R04: %+13.6E\nR05: %+13.6E\nR06: %+13.6E\n",  rfr[3], rfr[4], rfr[5]);
+ 705                  printf("R07: %+13.6E\nR08: %+13.6E\nR09: %+13.6E\n\n",  rfr[6], rfr[7], rfr[8]);
+ 706                          
+ 707                  VN_Delay(DELAY);
+ 708                          
+ 709                  /* Reference Frame Rotation - Read */
+ 710                  size = 9*4+4;
+ 711                  reg = 26;
+ 712                  printf("Read Register %u - Reference Frame Rotation\n", reg);
+ 713                  ReturnPacket = VN100_SPI_GetRefFrameRot(0, rfr);
+ 714                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 715                  printf("R01: %+13.6E\nR02: %+13.6E\nR03: %+13.6E\n",  rfr[0], rfr[1], rfr[2]);
+ 716                  printf("R04: %+13.6E\nR05: %+13.6E\nR06: %+13.6E\n",  rfr[3], rfr[4], rfr[5]);
+ 717                  printf("R07: %+13.6E\nR08: %+13.6E\nR09: %+13.6E\n\n",  rfr[6], rfr[7], rfr[8]);
+ 718                          
+ 719                  VN_Delay(DELAY);
+ 720                  
+ 721                  /* Accelerometer Gain - Write */
+ 722                  size = 1*4+4;
+ 723                  reg = 28;
+ 724                  acg = VN100_AccGain_6G;
+ 725                  printf("Write Register %u - Accelerometer Gain\n", reg);
+ 726                  ReturnPacket = VN100_SPI_SetAccGain(0, acg);
+ 727                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 728                  printf("A: %u\n\n",  acg);
+ 729                  
+ 730                  VN_Delay(DELAY);        
+ 731                  
+ 732                  /* Accelerometer Gain - Read */
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 13  
+
+ 733                  size = 1*4+4;
+ 734                  reg = 28;
+ 735                  printf("Read Register %u - Accelerometer Gain\n", reg);
+ 736                  ReturnPacket = VN100_SPI_GetAccGain(0, &acg);
+ 737                  Serial_SendHexBytes(size, (u8*)ReturnPacket);
+ 738                  printf("A: %u\n\n",  acg);
+ 739                  
+ 740                  VN_Delay(DELAY);        
+ 741                  
+ 742                  /* Restore factory default settings */
+ 743                  VN100_SPI_RestoreFactorySettings(0);
+ 744                          
+ 745                  VN_Delay(DELAY);  
+ 746            
+ 747            /* Infinite loop */
+ 748            while (1)
+ 749            {
+ 750                  for(size=0;size<10;size++){
+ 751                  VN_Delay(1e6);
+ 752          
+ 753                          /* Get YMR */
+ 754                  VN100_SPI_GetYPRMagAccRates(0, ypr, mag, acc, gyr);
+ 755                
+ 756                  /* Display ypr */
+ 757                  printf("Yaw: %+07.2f\nPitch: %+07.2f\nRoll: %+07.2f\n\n", ypr[0], ypr[1], ypr[2]);
+ 758                  }
+ 759            }
+ 760            printf("The program ended");
+ 761            getch();
+ 762          }
+ 763          
+ 764          /*******************************************************************************
+ 765          * Function Name  : fputc
+ 766          * Description    : Redirects data out serial port
+ 767          * Input          : None
+ 768          * Output         : None
+ 769          * Return         : None
+ 770          *******************************************************************************/
+ 771          int fputc(int ch, FILE *f)
+ 772          {
+ 773                  USART_SendData(USART1, ch);
+ 774                  while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+ 775                  return ch;
+ 776          }
+ 777          
+ 778          /*******************************************************************************
+ 779          * Function Name  : Serial_SendByte(u8 byte)
+ 780          * Description    : Send single byte over serial                                        
+ 781          * Input          : None
+ 782          * Output         : None
+ 783          * Return         : None
+ 784          *******************************************************************************/
+ 785          void Serial_SendByte(char byte){
+ 786                  USART_SendData(USART1, byte);
+ 787                  while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+ 788          }
+ 789          
+ 790          /*******************************************************************************
+ 791          * Function Name  : Serial_SendHexBytes(u32 bytes, u8 *buffer)
+ 792          * Description    : Send the given number of bytes out the serial as hexadecimal
+ 793          *                  with spaces in between bytes.                                        
+ 794          * Input          : None
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 14  
+
+ 795          * Output         : None
+ 796          * Return         : None
+ 797          *******************************************************************************/
+ 798          void Serial_SendHexBytes(u32 bytes, u8 *buffer)
+ 799          {
+ 800                  /* Send out buffer over serial */
+ 801                  char hexbyte[3];        
+ 802                  u32 RxIdx = 0;
+ 803                  
+ 804                  while(RxIdx < bytes){
+ 805                          /* Get string hex for byte */
+ 806                          sprintf(hexbyte, "%02X", buffer[RxIdx++]);
+ 807                          
+ 808                          /* Send hex characters */
+ 809                          Serial_SendByte(hexbyte[0]);
+ 810                          Serial_SendByte(hexbyte[1]);
+ 811                          Serial_SendByte(0x20);  /* space */
+ 812                  }
+ 813                  
+ 814                  Serial_SendByte(13);
+ 815                  Serial_SendByte(10);
+ 816          }
+ 817          
+ 818          
+ 819          /*******************************************************************************
+ 820          * Function Name  : RCC_Configuration
+ 821          * Description    : Configures the different system clocks.
+ 822          * Input          : None
+ 823          * Output         : None
+ 824          * Return         : None
+ 825          *******************************************************************************/
+ 826          void RCC_Configuration(void)
+ 827          {
+ 828            /* RCC system reset(for debug purpose) */
+ 829            RCC_DeInit();
+ 830          
+ 831            /* Enable HSE */
+ 832            RCC_HSEConfig(RCC_HSE_ON);
+ 833          
+ 834            /* Wait till HSE is ready */
+ 835            HSEStartUpStatus = RCC_WaitForHSEStartUp();
+ 836          
+ 837            if (HSEStartUpStatus == SUCCESS)
+ 838            {
+ 839              /* Enable Prefetch Buffer */
+ 840              FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);
+ 841          
+ 842              /* Flash 2 wait state */
+ 843              FLASH_SetLatency(FLASH_Latency_2);
+ 844          
+ 845              /* HCLK = SYSCLK */
+ 846              RCC_HCLKConfig(RCC_SYSCLK_Div1);
+ 847          
+ 848              /* PCLK2 = HCLK/2 */
+ 849              RCC_PCLK2Config(RCC_HCLK_Div2);
+ 850          
+ 851              /* PCLK1 = HCLK/2 */
+ 852              RCC_PCLK1Config(RCC_HCLK_Div2);
+ 853          
+ 854              /* PLLCLK = 8MHz * 9 = 72 MHz */
+ 855              RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_9);
+ 856          
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 15  
+
+ 857              /* Enable PLL */
+ 858              RCC_PLLCmd(ENABLE);
+ 859          
+ 860              /* Wait till PLL is ready */
+ 861              while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET)
+ 862              {}
+ 863          
+ 864              /* Select PLL as system clock source */
+ 865              RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+ 866          
+ 867              /* Wait till PLL is used as system clock source */
+ 868              while (RCC_GetSYSCLKSource() != 0x08)
+ 869              {}
+ 870            }
+ 871          
+ 872            /* Enable peripheral clocks --------------------------------------------------*/
+ 873            /* GPIOA, GPIOB, SPI1, USART1, and AFIO clock enable */
+ 874            RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB |
+ 875                                   RCC_APB2Periph_SPI1| RCC_APB2Periph_AFIO, ENABLE);
+ 876          }
+ 877          
+ 878          /*******************************************************************************
+ 879          * Function Name  : GPIO_Configuration
+ 880          * Description    : Configures the different GPIO ports.
+ 881          * Input          : None
+ 882          * Output         : None
+ 883          * Return         : None
+ 884          *******************************************************************************/
+ 885          void GPIO_Configuration(void)
+ 886          {
+ 887            GPIO_InitTypeDef GPIO_InitStructure;
+ 888          
+ 889            /* Configure SPI1 pins: SCK, MISO and MOSI ---------------------------------*/
+ 890            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
+ 891            GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+ 892            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+ 893            GPIO_Init(GPIOA, &GPIO_InitStructure);
+ 894                  
+ 895            /* Configure SPI1 pins: CS */
+ 896            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+ 897            GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+ 898            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+ 899            GPIO_Init(GPIOA, &GPIO_InitStructure);        
+ 900                  
+ 901            /* Configure USART1 pins: TX ---------------------------------*/
+ 902            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+ 903            GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+ 904            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+ 905            GPIO_Init(GPIOA, &GPIO_InitStructure);
+ 906                  
+ 907            /* Configure USART1 pins: RX ---------------------------------*/
+ 908            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+ 909            GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+ 910            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+ 911            GPIO_Init(GPIOA, &GPIO_InitStructure);                
+ 912          }
+ 913          
+ 914          /*******************************************************************************
+ 915          * Function Name  : NVIC_Configuration
+ 916          * Description    : Configures NVIC and Vector Table base location.
+ 917          * Input          : None
+ 918          * Output         : None
+C51 COMPILER V9.05   MAIN                                                                  06/03/2012 17:04:53 PAGE 16  
+
+ 919          * Return         : None
+ 920          *******************************************************************************/
+ 921          void NVIC_Configuration(void)
+ 922          {
+ 923          #ifdef  VECT_TAB_RAM
+                /* Set the Vector Table base location at 0x20000000 */
+                NVIC_SetVectorTable(NVIC_VectTab_RAM, 0x0);
+              #else  /* VECT_TAB_FLASH  */
+ 927            /* Set the Vector Table base location at 0x08000000 */
+ 928            NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0);
+ 929          #endif
+ 930          }
+ 931          
+ 932          
+ 933          
+ 934          
+ 935          #ifdef  DEBUG
+              /*******************************************************************************
+              * Function Name  : assert_failed
+              * Description    : Reports the name of the source file and the source line number
+              *                  where the assert_param error has occurred.
+              * Input          : - file: pointer to the source file name
+              *                  - line: assert_param error line source number
+              * Output         : None
+              * Return         : None
+              *******************************************************************************/
+              void assert_failed(u8* file, u32 line)
+              {
+                /* User can add his own implementation to report the file name and line number,
+                   ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+              
+                /* Infinite loop */
+                while (1)
+                {}
+              }
+              #endif
+ 955          /**************** (C) COPYRIGHT 2009 VectorNav Technologies *****END OF FILE****/
+
+C51 COMPILATION COMPLETE.  3 WARNING(S),  2 ERROR(S)

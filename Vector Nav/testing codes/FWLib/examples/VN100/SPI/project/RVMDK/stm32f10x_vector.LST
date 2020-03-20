@@ -1,0 +1,815 @@
+A51 MACRO ASSEMBLER  STM32F10X_VECTOR                                                     06/03/2012 17:04:55 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.02a
+NO OBJECT MODULE REQUESTED
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE stm32f10x_vector.s SET(SMALL) DEBUG EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
+                       2     ;* File Name          : stm32f10x_vector.s
+                       3     ;* Author             : MCD Application Team
+                       4     ;* Version            : V2.0.3
+                       5     ;* Date               : 09/22/2008
+                       6     ;* Description        : STM32F10x vector table for RVMDK toolchain. 
+                       7     ;*                      This module performs:
+                       8     ;*                      - Set the initial SP
+                       9     ;*                      - Set the initial PC == Reset_Handler
+                      10     ;*                      - Set the vector table entries with the exceptions ISR address
+                      11     ;*                      - Configure external SRAM mounted on STM3210E-EVAL board
+                      12     ;*                        to be used as data memory (optional, to be enabled by user)
+                      13     ;*                      - Branches to __main in the C library (which eventually
+                      14     ;*                        calls main()).
+                      15     ;*                      After Reset the CortexM3 processor is in Thread mode,
+                      16     ;*                      priority is Privileged, and the Stack is set to Main.
+                      17     ;* <<< Use Configuration Wizard in Context Menu >>>   
+                      18     ;*******************************************************************************
+                      19     ; THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+                      20     ; WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
+                      21     ; AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
+                      22     ; INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
+                      23     ; CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
+                      24     ; INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+                      25     ;*******************************************************************************
+                      26     
+                      27     ; If you need to use external SRAM mounted on STM3210E-EVAL board as data memory,
+                      28     ; change the following define value to '1' (or choose ENABLE in Configuration Wizard window
+                             )
+                      29     ;//   <o>  External SRAM Configuration  <0=> DISABLE <1=> ENABLE 
+  0000                30     DATA_IN_ExtSRAM  EQU     0
+                      31     
+                      32     
+                      33     ; Amount of memory (in bytes) allocated for Stack
+                      34     ; Tailor this value to your application needs
+                      35     ;// <h> Stack Configuration
+                      36     ;//   <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
+                      37     ;// </h>
+  0400                38     Stack_Size       EQU     0x00000400
+                      39     
+                      40                      AREA    STACK, NOINIT, READWRITE, ALIGN=3
+*** __________________________________________^
+*** ERROR #A9 IN 40 (stm32f10x_vector.s, LINE 40): SYNTAX ERROR
+                      41     Stack_Mem        SPACE   Stack_Size
+*** _________________________^
+*** ERROR #A9 IN 41 (stm32f10x_vector.s, LINE 41): SYNTAX ERROR
+                      42     
+                      43     __initial_sp
+*** _________________________^
+*** ERROR #A9 IN 43 (stm32f10x_vector.s, LINE 43): SYNTAX ERROR
+                      44     ; If you need to use external SRAM mounted on STM3210E-EVAL board as data memory
+                      45     ; and internal SRAM for Stack, uncomment the following line and comment the line above
+                      46     ;__initial_sp    EQU 0x20000000 + Stack_Size ; "Use MicroLIB" must be checked in
+                      47                                                  ; the Project->Options->Target window
+                      48     
+                      49     ; Amount of memory (in bytes) allocated for Heap
+                      50     ; Tailor this value to your application needs
+                      51     ;// <h> Heap Configuration
+A51 MACRO ASSEMBLER  STM32F10X_VECTOR                                                     06/03/2012 17:04:55 PAGE     2
+
+                      52     ;//   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
+                      53     ;// </h>
+                      54     
+  0400                55     Heap_Size        EQU     0x00000400
+                      56     
+                      57                      AREA    HEAP, NOINIT, READWRITE, ALIGN=3
+*** __________________________________________^
+*** ERROR #A9 IN 57 (stm32f10x_vector.s, LINE 57): SYNTAX ERROR
+                      58     __heap_base
+*** _________________________^
+*** ERROR #A9 IN 58 (stm32f10x_vector.s, LINE 58): SYNTAX ERROR
+                      59     Heap_Mem         SPACE   Heap_Size
+*** _________________________^
+*** ERROR #A9 IN 59 (stm32f10x_vector.s, LINE 59): SYNTAX ERROR
+                      60     __heap_limit
+*** _________________________^
+*** ERROR #A9 IN 60 (stm32f10x_vector.s, LINE 60): SYNTAX ERROR
+                      61                     
+                      62     
+                      63                      THUMB
+*** __________________________________________^
+*** ERROR #A9 IN 63 (stm32f10x_vector.s, LINE 63): SYNTAX ERROR
+                      64                      PRESERVE8
+*** __________________________________________^
+*** ERROR #A9 IN 64 (stm32f10x_vector.s, LINE 64): SYNTAX ERROR
+                      65     
+                      66                      ; Import exceptions handlers
+                      67                      IMPORT  NMIException
+*** __________________________________________^
+*** ERROR #A9 IN 67 (stm32f10x_vector.s, LINE 67): SYNTAX ERROR
+                      68                      IMPORT  HardFaultException
+*** __________________________________________^
+*** ERROR #A9 IN 68 (stm32f10x_vector.s, LINE 68): SYNTAX ERROR
+                      69                      IMPORT  MemManageException
+*** __________________________________________^
+*** ERROR #A9 IN 69 (stm32f10x_vector.s, LINE 69): SYNTAX ERROR
+                      70                      IMPORT  BusFaultException
+*** __________________________________________^
+*** ERROR #A9 IN 70 (stm32f10x_vector.s, LINE 70): SYNTAX ERROR
+                      71                      IMPORT  UsageFaultException
+*** __________________________________________^
+*** ERROR #A9 IN 71 (stm32f10x_vector.s, LINE 71): SYNTAX ERROR
+                      72                      IMPORT  SVCHandler
+*** __________________________________________^
+*** ERROR #A9 IN 72 (stm32f10x_vector.s, LINE 72): SYNTAX ERROR
+                      73                      IMPORT  DebugMonitor
+*** __________________________________________^
+*** ERROR #A9 IN 73 (stm32f10x_vector.s, LINE 73): SYNTAX ERROR
+                      74                      IMPORT  PendSVC
+*** __________________________________________^
+*** ERROR #A9 IN 74 (stm32f10x_vector.s, LINE 74): SYNTAX ERROR
+                      75                      IMPORT  SysTickHandler
+*** __________________________________________^
+*** ERROR #A9 IN 75 (stm32f10x_vector.s, LINE 75): SYNTAX ERROR
+                      76                      IMPORT  WWDG_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 76 (stm32f10x_vector.s, LINE 76): SYNTAX ERROR
+                      77                      IMPORT  PVD_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 77 (stm32f10x_vector.s, LINE 77): SYNTAX ERROR
+                      78                      IMPORT  TAMPER_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 78 (stm32f10x_vector.s, LINE 78): SYNTAX ERROR
+                      79                      IMPORT  RTC_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 79 (stm32f10x_vector.s, LINE 79): SYNTAX ERROR
+A51 MACRO ASSEMBLER  STM32F10X_VECTOR                                                     06/03/2012 17:04:55 PAGE     3
+
+                      80                      IMPORT  FLASH_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 80 (stm32f10x_vector.s, LINE 80): SYNTAX ERROR
+                      81                      IMPORT  RCC_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 81 (stm32f10x_vector.s, LINE 81): SYNTAX ERROR
+                      82                      IMPORT  EXTI0_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 82 (stm32f10x_vector.s, LINE 82): SYNTAX ERROR
+                      83                      IMPORT  EXTI1_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 83 (stm32f10x_vector.s, LINE 83): SYNTAX ERROR
+                      84                      IMPORT  EXTI2_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 84 (stm32f10x_vector.s, LINE 84): SYNTAX ERROR
+                      85                      IMPORT  EXTI3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 85 (stm32f10x_vector.s, LINE 85): SYNTAX ERROR
+                      86                      IMPORT  EXTI4_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 86 (stm32f10x_vector.s, LINE 86): SYNTAX ERROR
+                      87                      IMPORT  DMA1_Channel1_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 87 (stm32f10x_vector.s, LINE 87): SYNTAX ERROR
+                      88                      IMPORT  DMA1_Channel2_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 88 (stm32f10x_vector.s, LINE 88): SYNTAX ERROR
+                      89                      IMPORT  DMA1_Channel3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 89 (stm32f10x_vector.s, LINE 89): SYNTAX ERROR
+                      90                      IMPORT  DMA1_Channel4_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 90 (stm32f10x_vector.s, LINE 90): SYNTAX ERROR
+                      91                      IMPORT  DMA1_Channel5_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 91 (stm32f10x_vector.s, LINE 91): SYNTAX ERROR
+                      92                      IMPORT  DMA1_Channel6_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 92 (stm32f10x_vector.s, LINE 92): SYNTAX ERROR
+                      93                      IMPORT  DMA1_Channel7_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 93 (stm32f10x_vector.s, LINE 93): SYNTAX ERROR
+                      94                      IMPORT  ADC1_2_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 94 (stm32f10x_vector.s, LINE 94): SYNTAX ERROR
+                      95                      IMPORT  USB_HP_CAN_TX_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 95 (stm32f10x_vector.s, LINE 95): SYNTAX ERROR
+                      96                      IMPORT  USB_LP_CAN_RX0_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 96 (stm32f10x_vector.s, LINE 96): SYNTAX ERROR
+                      97                      IMPORT  CAN_RX1_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 97 (stm32f10x_vector.s, LINE 97): SYNTAX ERROR
+                      98                      IMPORT  CAN_SCE_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 98 (stm32f10x_vector.s, LINE 98): SYNTAX ERROR
+                      99                      IMPORT  EXTI9_5_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 99 (stm32f10x_vector.s, LINE 99): SYNTAX ERROR
+                     100                      IMPORT  TIM1_BRK_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 100 (stm32f10x_vector.s, LINE 100): SYNTAX ERROR
+                     101                      IMPORT  TIM1_UP_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 101 (stm32f10x_vector.s, LINE 101): SYNTAX ERROR
+A51 MACRO ASSEMBLER  STM32F10X_VECTOR                                                     06/03/2012 17:04:55 PAGE     4
+
+                     102                      IMPORT  TIM1_TRG_COM_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 102 (stm32f10x_vector.s, LINE 102): SYNTAX ERROR
+                     103                      IMPORT  TIM1_CC_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 103 (stm32f10x_vector.s, LINE 103): SYNTAX ERROR
+                     104                      IMPORT  TIM2_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 104 (stm32f10x_vector.s, LINE 104): SYNTAX ERROR
+                     105                      IMPORT  TIM3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 105 (stm32f10x_vector.s, LINE 105): SYNTAX ERROR
+                     106                      IMPORT  TIM4_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 106 (stm32f10x_vector.s, LINE 106): SYNTAX ERROR
+                     107                      IMPORT  I2C1_EV_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 107 (stm32f10x_vector.s, LINE 107): SYNTAX ERROR
+                     108                      IMPORT  I2C1_ER_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 108 (stm32f10x_vector.s, LINE 108): SYNTAX ERROR
+                     109                      IMPORT  I2C2_EV_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 109 (stm32f10x_vector.s, LINE 109): SYNTAX ERROR
+                     110                      IMPORT  I2C2_ER_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 110 (stm32f10x_vector.s, LINE 110): SYNTAX ERROR
+                     111                      IMPORT  SPI1_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 111 (stm32f10x_vector.s, LINE 111): SYNTAX ERROR
+                     112                      IMPORT  SPI2_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 112 (stm32f10x_vector.s, LINE 112): SYNTAX ERROR
+                     113                      IMPORT  USART1_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 113 (stm32f10x_vector.s, LINE 113): SYNTAX ERROR
+                     114                      IMPORT  USART2_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 114 (stm32f10x_vector.s, LINE 114): SYNTAX ERROR
+                     115                      IMPORT  USART3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 115 (stm32f10x_vector.s, LINE 115): SYNTAX ERROR
+                     116                      IMPORT  EXTI15_10_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 116 (stm32f10x_vector.s, LINE 116): SYNTAX ERROR
+                     117                      IMPORT  RTCAlarm_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 117 (stm32f10x_vector.s, LINE 117): SYNTAX ERROR
+                     118                      IMPORT  USBWakeUp_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 118 (stm32f10x_vector.s, LINE 118): SYNTAX ERROR
+                     119                      IMPORT  TIM8_BRK_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 119 (stm32f10x_vector.s, LINE 119): SYNTAX ERROR
+                     120                      IMPORT  TIM8_UP_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 120 (stm32f10x_vector.s, LINE 120): SYNTAX ERROR
+                     121                      IMPORT  TIM8_TRG_COM_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 121 (stm32f10x_vector.s, LINE 121): SYNTAX ERROR
+                     122                      IMPORT  TIM8_CC_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 122 (stm32f10x_vector.s, LINE 122): SYNTAX ERROR
+                     123                      IMPORT  ADC3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 123 (stm32f10x_vector.s, LINE 123): SYNTAX ERROR
+A51 MACRO ASSEMBLER  STM32F10X_VECTOR                                                     06/03/2012 17:04:55 PAGE     5
+
+                     124                      IMPORT  FSMC_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 124 (stm32f10x_vector.s, LINE 124): SYNTAX ERROR
+                     125                      IMPORT  SDIO_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 125 (stm32f10x_vector.s, LINE 125): SYNTAX ERROR
+                     126                      IMPORT  TIM5_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 126 (stm32f10x_vector.s, LINE 126): SYNTAX ERROR
+                     127                      IMPORT  SPI3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 127 (stm32f10x_vector.s, LINE 127): SYNTAX ERROR
+                     128                      IMPORT  UART4_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 128 (stm32f10x_vector.s, LINE 128): SYNTAX ERROR
+                     129                      IMPORT  UART5_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 129 (stm32f10x_vector.s, LINE 129): SYNTAX ERROR
+                     130                      IMPORT  TIM6_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 130 (stm32f10x_vector.s, LINE 130): SYNTAX ERROR
+                     131                      IMPORT  TIM7_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 131 (stm32f10x_vector.s, LINE 131): SYNTAX ERROR
+                     132                      IMPORT  DMA2_Channel1_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 132 (stm32f10x_vector.s, LINE 132): SYNTAX ERROR
+                     133                      IMPORT  DMA2_Channel2_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 133 (stm32f10x_vector.s, LINE 133): SYNTAX ERROR
+                     134                      IMPORT  DMA2_Channel3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 134 (stm32f10x_vector.s, LINE 134): SYNTAX ERROR
+                     135                      IMPORT  DMA2_Channel4_5_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 135 (stm32f10x_vector.s, LINE 135): SYNTAX ERROR
+                     136                      
+                     137     ;*******************************************************************************
+                     138     ; Fill-up the Vector Table entries with the exceptions ISR address
+                     139     ;*******************************************************************************
+                     140                      AREA    RESET, DATA, READONLY
+*** __________________________________________^
+*** ERROR #A9 IN 140 (stm32f10x_vector.s, LINE 140): SYNTAX ERROR
+                     141                      EXPORT  __Vectors
+*** __________________________________________^
+*** ERROR #A9 IN 141 (stm32f10x_vector.s, LINE 141): SYNTAX ERROR
+                     142                           
+                     143     __Vectors        DCD  __initial_sp              ; Top of Stack
+*** _________________________^
+*** ERROR #A9 IN 143 (stm32f10x_vector.s, LINE 143): SYNTAX ERROR
+                     144                      DCD  Reset_Handler
+*** __________________________________________^
+*** ERROR #A9 IN 144 (stm32f10x_vector.s, LINE 144): SYNTAX ERROR
+                     145                      DCD  NMIException
+*** __________________________________________^
+*** ERROR #A9 IN 145 (stm32f10x_vector.s, LINE 145): SYNTAX ERROR
+                     146                      DCD  HardFaultException
+*** __________________________________________^
+*** ERROR #A9 IN 146 (stm32f10x_vector.s, LINE 146): SYNTAX ERROR
+                     147                      DCD  MemManageException
+*** __________________________________________^
+*** ERROR #A9 IN 147 (stm32f10x_vector.s, LINE 147): SYNTAX ERROR
+                     148                      DCD  BusFaultException
+*** __________________________________________^
+*** ERROR #A9 IN 148 (stm32f10x_vector.s, LINE 148): SYNTAX ERROR
+                     149                      DCD  UsageFaultException
+A51 MACRO ASSEMBLER  STM32F10X_VECTOR                                                     06/03/2012 17:04:55 PAGE     6
+
+*** __________________________________________^
+*** ERROR #A9 IN 149 (stm32f10x_vector.s, LINE 149): SYNTAX ERROR
+                     150                      DCD  0                 ; Reserved
+*** __________________________________________^
+*** ERROR #A9 IN 150 (stm32f10x_vector.s, LINE 150): SYNTAX ERROR
+                     151                      DCD  0                 ; Reserved
+*** __________________________________________^
+*** ERROR #A9 IN 151 (stm32f10x_vector.s, LINE 151): SYNTAX ERROR
+                     152                      DCD  0                 ; Reserved
+*** __________________________________________^
+*** ERROR #A9 IN 152 (stm32f10x_vector.s, LINE 152): SYNTAX ERROR
+                     153                      DCD  0                 ; Reserved
+*** __________________________________________^
+*** ERROR #A9 IN 153 (stm32f10x_vector.s, LINE 153): SYNTAX ERROR
+                     154                      DCD  SVCHandler
+*** __________________________________________^
+*** ERROR #A9 IN 154 (stm32f10x_vector.s, LINE 154): SYNTAX ERROR
+                     155                      DCD  DebugMonitor
+*** __________________________________________^
+*** ERROR #A9 IN 155 (stm32f10x_vector.s, LINE 155): SYNTAX ERROR
+                     156                      DCD  0                 ; Reserved
+*** __________________________________________^
+*** ERROR #A9 IN 156 (stm32f10x_vector.s, LINE 156): SYNTAX ERROR
+                     157                      DCD  PendSVC
+*** __________________________________________^
+*** ERROR #A9 IN 157 (stm32f10x_vector.s, LINE 157): SYNTAX ERROR
+                     158                      DCD  SysTickHandler
+*** __________________________________________^
+*** ERROR #A9 IN 158 (stm32f10x_vector.s, LINE 158): SYNTAX ERROR
+                     159                      DCD  WWDG_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 159 (stm32f10x_vector.s, LINE 159): SYNTAX ERROR
+                     160                      DCD  PVD_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 160 (stm32f10x_vector.s, LINE 160): SYNTAX ERROR
+                     161                      DCD  TAMPER_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 161 (stm32f10x_vector.s, LINE 161): SYNTAX ERROR
+                     162                      DCD  RTC_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 162 (stm32f10x_vector.s, LINE 162): SYNTAX ERROR
+                     163                      DCD  FLASH_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 163 (stm32f10x_vector.s, LINE 163): SYNTAX ERROR
+                     164                      DCD  RCC_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 164 (stm32f10x_vector.s, LINE 164): SYNTAX ERROR
+                     165                      DCD  EXTI0_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 165 (stm32f10x_vector.s, LINE 165): SYNTAX ERROR
+                     166                      DCD  EXTI1_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 166 (stm32f10x_vector.s, LINE 166): SYNTAX ERROR
+                     167                      DCD  EXTI2_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 167 (stm32f10x_vector.s, LINE 167): SYNTAX ERROR
+                     168                      DCD  EXTI3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 168 (stm32f10x_vector.s, LINE 168): SYNTAX ERROR
+                     169                      DCD  EXTI4_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 169 (stm32f10x_vector.s, LINE 169): SYNTAX ERROR
+                     170                      DCD  DMA1_Channel1_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 170 (stm32f10x_vector.s, LINE 170): SYNTAX ERROR
+                     171                      DCD  DMA1_Channel2_IRQHandler
+A51 MACRO ASSEMBLER  STM32F10X_VECTOR                                                     06/03/2012 17:04:55 PAGE     7
+
+*** __________________________________________^
+*** ERROR #A9 IN 171 (stm32f10x_vector.s, LINE 171): SYNTAX ERROR
+                     172                      DCD  DMA1_Channel3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 172 (stm32f10x_vector.s, LINE 172): SYNTAX ERROR
+                     173                      DCD  DMA1_Channel4_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 173 (stm32f10x_vector.s, LINE 173): SYNTAX ERROR
+                     174                      DCD  DMA1_Channel5_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 174 (stm32f10x_vector.s, LINE 174): SYNTAX ERROR
+                     175                      DCD  DMA1_Channel6_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 175 (stm32f10x_vector.s, LINE 175): SYNTAX ERROR
+                     176                      DCD  DMA1_Channel7_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 176 (stm32f10x_vector.s, LINE 176): SYNTAX ERROR
+                     177                      DCD  ADC1_2_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 177 (stm32f10x_vector.s, LINE 177): SYNTAX ERROR
+                     178                      DCD  USB_HP_CAN_TX_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 178 (stm32f10x_vector.s, LINE 178): SYNTAX ERROR
+                     179                      DCD  USB_LP_CAN_RX0_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 179 (stm32f10x_vector.s, LINE 179): SYNTAX ERROR
+                     180                      DCD  CAN_RX1_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 180 (stm32f10x_vector.s, LINE 180): SYNTAX ERROR
+                     181                      DCD  CAN_SCE_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 181 (stm32f10x_vector.s, LINE 181): SYNTAX ERROR
+                     182                      DCD  EXTI9_5_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 182 (stm32f10x_vector.s, LINE 182): SYNTAX ERROR
+                     183                      DCD  TIM1_BRK_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 183 (stm32f10x_vector.s, LINE 183): SYNTAX ERROR
+                     184                      DCD  TIM1_UP_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 184 (stm32f10x_vector.s, LINE 184): SYNTAX ERROR
+                     185                      DCD  TIM1_TRG_COM_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 185 (stm32f10x_vector.s, LINE 185): SYNTAX ERROR
+                     186                      DCD  TIM1_CC_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 186 (stm32f10x_vector.s, LINE 186): SYNTAX ERROR
+                     187                      DCD  TIM2_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 187 (stm32f10x_vector.s, LINE 187): SYNTAX ERROR
+                     188                      DCD  TIM3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 188 (stm32f10x_vector.s, LINE 188): SYNTAX ERROR
+                     189                      DCD  TIM4_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 189 (stm32f10x_vector.s, LINE 189): SYNTAX ERROR
+                     190                      DCD  I2C1_EV_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 190 (stm32f10x_vector.s, LINE 190): SYNTAX ERROR
+                     191                      DCD  I2C1_ER_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 191 (stm32f10x_vector.s, LINE 191): SYNTAX ERROR
+                     192                      DCD  I2C2_EV_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 192 (stm32f10x_vector.s, LINE 192): SYNTAX ERROR
+                     193                      DCD  I2C2_ER_IRQHandler
+A51 MACRO ASSEMBLER  STM32F10X_VECTOR                                                     06/03/2012 17:04:55 PAGE     8
+
+*** __________________________________________^
+*** ERROR #A9 IN 193 (stm32f10x_vector.s, LINE 193): SYNTAX ERROR
+                     194                      DCD  SPI1_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 194 (stm32f10x_vector.s, LINE 194): SYNTAX ERROR
+                     195                      DCD  SPI2_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 195 (stm32f10x_vector.s, LINE 195): SYNTAX ERROR
+                     196                      DCD  USART1_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 196 (stm32f10x_vector.s, LINE 196): SYNTAX ERROR
+                     197                      DCD  USART2_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 197 (stm32f10x_vector.s, LINE 197): SYNTAX ERROR
+                     198                      DCD  USART3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 198 (stm32f10x_vector.s, LINE 198): SYNTAX ERROR
+                     199                      DCD  EXTI15_10_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 199 (stm32f10x_vector.s, LINE 199): SYNTAX ERROR
+                     200                      DCD  RTCAlarm_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 200 (stm32f10x_vector.s, LINE 200): SYNTAX ERROR
+                     201                      DCD  USBWakeUp_IRQHandler 
+*** __________________________________________^
+*** ERROR #A9 IN 201 (stm32f10x_vector.s, LINE 201): SYNTAX ERROR
+                     202                      DCD  TIM8_BRK_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 202 (stm32f10x_vector.s, LINE 202): SYNTAX ERROR
+                     203                      DCD  TIM8_UP_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 203 (stm32f10x_vector.s, LINE 203): SYNTAX ERROR
+                     204                      DCD  TIM8_TRG_COM_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 204 (stm32f10x_vector.s, LINE 204): SYNTAX ERROR
+                     205                      DCD  TIM8_CC_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 205 (stm32f10x_vector.s, LINE 205): SYNTAX ERROR
+                     206                      DCD  ADC3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 206 (stm32f10x_vector.s, LINE 206): SYNTAX ERROR
+                     207                      DCD  FSMC_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 207 (stm32f10x_vector.s, LINE 207): SYNTAX ERROR
+                     208                      DCD  SDIO_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 208 (stm32f10x_vector.s, LINE 208): SYNTAX ERROR
+                     209                      DCD  TIM5_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 209 (stm32f10x_vector.s, LINE 209): SYNTAX ERROR
+                     210                      DCD  SPI3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 210 (stm32f10x_vector.s, LINE 210): SYNTAX ERROR
+                     211                      DCD  UART4_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 211 (stm32f10x_vector.s, LINE 211): SYNTAX ERROR
+                     212                      DCD  UART5_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 212 (stm32f10x_vector.s, LINE 212): SYNTAX ERROR
+                     213                      DCD  TIM6_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 213 (stm32f10x_vector.s, LINE 213): SYNTAX ERROR
+                     214                      DCD  TIM7_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 214 (stm32f10x_vector.s, LINE 214): SYNTAX ERROR
+                     215                      DCD  DMA2_Channel1_IRQHandler
+A51 MACRO ASSEMBLER  STM32F10X_VECTOR                                                     06/03/2012 17:04:55 PAGE     9
+
+*** __________________________________________^
+*** ERROR #A9 IN 215 (stm32f10x_vector.s, LINE 215): SYNTAX ERROR
+                     216                      DCD  DMA2_Channel2_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 216 (stm32f10x_vector.s, LINE 216): SYNTAX ERROR
+                     217                      DCD  DMA2_Channel3_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 217 (stm32f10x_vector.s, LINE 217): SYNTAX ERROR
+                     218                      DCD  DMA2_Channel4_5_IRQHandler
+*** __________________________________________^
+*** ERROR #A9 IN 218 (stm32f10x_vector.s, LINE 218): SYNTAX ERROR
+                     219                      
+                     220                      AREA    |.text|, CODE, READONLY
+*** __________________________________________^
+*** ERROR #A9 IN 220 (stm32f10x_vector.s, LINE 220): SYNTAX ERROR
+                     221     
+                     222     ; Reset handler routine
+                     223     Reset_Handler    PROC
+*** _________________________^
+*** ERROR #A9 IN 223 (stm32f10x_vector.s, LINE 223): SYNTAX ERROR
+                     224                      EXPORT  Reset_Handler
+*** __________________________________________^
+*** ERROR #A9 IN 224 (stm32f10x_vector.s, LINE 224): SYNTAX ERROR
+                     225                                      
+                     226                                              IF      DATA_IN_ExtSRAM == 1
+                             ; FSMC Bank1 NOR/SRAM3 is used for the STM3210E-EVAL, if another Bank is 
+                             ; required, then adjust the Register Addresses
+                             
+                             
+                             ; Enable FSMC clock
+                                                                      LDR R0,= 0x00000114 
+                                                                      LDR R1,= 0x40021014
+                                                                      STR R0,[R1]                     
+                                               
+                             ; Enable GPIOD, GPIOE, GPIOF and GPIOG clocks
+                                                                      LDR R0,= 0x000001E0
+                                                                      LDR R1,= 0x40021018
+                                                                      STR R0,[R1]       
+                             
+                             ; SRAM Data lines, NOE and NWE configuration 
+                             ; SRAM Address lines configuration 
+                             ; NOE and NWE configuration   
+                             ; NE3 configuration 
+                             ; NBL0, NBL1 configuration 
+                             
+                                                                      LDR R0,= 0x44BB44BB 
+                                                                      LDR R1,= 0x40011400
+                                                                      STR R0,[R1]            
+                                                              
+                                                                      LDR R0,= 0xBBBBBBBB 
+                                                                      LDR R1,= 0x40011404
+                                                                      STR R0,[R1]            
+                                                              
+                                                                      LDR R0,= 0xB44444BB 
+                                                                      LDR R1,= 0x40011800
+                                                                      STR R0,[R1]            
+                                                              
+                                                                      LDR R0,= 0xBBBBBBBB 
+                                                                      LDR R1,= 0x40011804
+                                                                      STR R0,[R1]            
+                                                              
+                                                                      LDR R0,= 0x44BBBBBB 
+                                                                      LDR R1,= 0x40011C00
+                                                                      STR R0,[R1]        
+                             
+                                                                      LDR R0,= 0xBBBB4444 
+A51 MACRO ASSEMBLER  STM32F10X_VECTOR                                                     06/03/2012 17:04:55 PAGE    10
+
+                                                                      LDR R1,= 0x40011C04
+                                                                      STR R0,[R1]        
+                             
+                                                                      LDR R0,= 0x44BBBBBB
+                                                                      LDR R1,= 0x40012000
+                                                                      STR R0,[R1]            
+                             
+                                                                      LDR R0,= 0x44444B44
+                                                                      LDR R1,= 0x40012004
+                                                                      STR R0,[R1]      
+                                                                      
+                             ; FSMC Configuration   
+                             ; Enable FSMC Bank1_SRAM Bank 
+                             
+                                                                     LDR R0,= 0x00001011
+                                                                     LDR R1,= 0xA0000010
+                                                                     STR R0,[R1]     
+                             
+                                                                     LDR R0,= 0x00000200 
+                                                                     LDR R1,= 0xA0000014
+                                                                     STR R0,[R1]     
+                             
+                                                                              
+                                                                     ENDIF
+                     292                                             
+                     293                                             
+                     294                                      IMPORT  __main
+*** __________________________________________________________^
+*** ERROR #A9 IN 294 (stm32f10x_vector.s, LINE 294): SYNTAX ERROR
+                     295                      LDR     R0, =__main
+*** __________________________________________^
+*** ERROR #A9 IN 295 (stm32f10x_vector.s, LINE 295): SYNTAX ERROR
+                     296                      BX      R0
+*** __________________________________________^
+*** ERROR #A9 IN 296 (stm32f10x_vector.s, LINE 296): SYNTAX ERROR
+                     297                      ENDP
+*** __________________________________________^
+*** ERROR #A9 IN 297 (stm32f10x_vector.s, LINE 297): SYNTAX ERROR
+                     298     
+                     299                      ALIGN
+*** __________________________________________^
+*** ERROR #A9 IN 299 (stm32f10x_vector.s, LINE 299): SYNTAX ERROR
+                     300     
+                     301     ;*******************************************************************************
+                     302     ; User Stack and Heap initialization
+                     303     ;*******************************************************************************
+                     304                      IF      :DEF:__MICROLIB           
+*** __________________________________________^
+*** ___________________________________________________^
+*** _______________________________________________________^
+*** ERROR #A5 IN 304 (stm32f10x_vector.s, LINE 304): ILLEGAL USE OF A RESERVED WORD
+*** ERROR #A7 IN 304 (stm32f10x_vector.s, LINE 304): LABEL NOT PERMITTED
+*** ERROR #A9 IN 304 (stm32f10x_vector.s, LINE 304): SYNTAX ERROR
+                     305                     
+                     306                      EXPORT  __initial_sp
+*** __________________________________________^
+*** ERROR #A9 IN 306 (stm32f10x_vector.s, LINE 306): SYNTAX ERROR
+                     307                      EXPORT  __heap_base
+*** __________________________________________^
+*** ERROR #A9 IN 307 (stm32f10x_vector.s, LINE 307): SYNTAX ERROR
+                     308                      EXPORT  __heap_limit
+*** __________________________________________^
+*** ERROR #A9 IN 308 (stm32f10x_vector.s, LINE 308): SYNTAX ERROR
+                     309                     
+                     310                      ELSE
+                                             
+A51 MACRO ASSEMBLER  STM32F10X_VECTOR                                                     06/03/2012 17:04:55 PAGE    11
+
+                                              IMPORT  __use_two_region_memory
+                                              EXPORT  __user_initial_stackheap
+                                              
+                             __user_initial_stackheap
+                             
+                                              LDR     R0, =  Heap_Mem
+                                              LDR     R1, =(Stack_Mem + Stack_Size)
+                                              LDR     R2, = (Heap_Mem +  Heap_Size)
+                                              LDR     R3, = Stack_Mem
+                                              BX      LR
+                             
+                                              ALIGN
+                             
+                                              ENDIF
+                     326     
+                     327                      END
+                             
+                             ;******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE*****
+A51 MACRO ASSEMBLER  STM32F10X_VECTOR                                                     06/03/2012 17:04:55 PAGE    12
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                     T Y P E  V A L U E   ATTRIBUTES
+
+ADC1_2_IRQHANDLER. . . . .    ----   -----       
+ADC3_IRQHANDLER. . . . . .    ----   -----       
+ALIGN. . . . . . . . . . .    ----   -----       
+AREA . . . . . . . . . . .    ----   -----       
+BUSFAULTEXCEPTION. . . . .    ----   -----       
+BX . . . . . . . . . . . .    ----   -----       
+CAN_RX1_IRQHANDLER . . . .    ----   -----       
+CAN_SCE_IRQHANDLER . . . .    ----   -----       
+DATA_IN_EXTSRAM. . . . . .  N NUMB   0000H   A   
+DCD. . . . . . . . . . . .    ----   -----       
+DEBUGMONITOR . . . . . . .    ----   -----       
+DMA1_CHANNEL1_IRQHANDLER .    ----   -----       
+DMA1_CHANNEL2_IRQHANDLER .    ----   -----       
+DMA1_CHANNEL3_IRQHANDLER .    ----   -----       
+DMA1_CHANNEL4_IRQHANDLER .    ----   -----       
+DMA1_CHANNEL5_IRQHANDLER .    ----   -----       
+DMA1_CHANNEL6_IRQHANDLER .    ----   -----       
+DMA1_CHANNEL7_IRQHANDLER .    ----   -----       
+DMA2_CHANNEL1_IRQHANDLER .    ----   -----       
+DMA2_CHANNEL2_IRQHANDLER .    ----   -----       
+DMA2_CHANNEL3_IRQHANDLER .    ----   -----       
+DMA2_CHANNEL4_5_IRQHANDLER    ----   -----       
+ENDP . . . . . . . . . . .    ----   -----       
+EXPORT . . . . . . . . . .    ----   -----       
+EXTI0_IRQHANDLER . . . . .    ----   -----       
+EXTI15_10_IRQHANDLER . . .    ----   -----       
+EXTI1_IRQHANDLER . . . . .    ----   -----       
+EXTI2_IRQHANDLER . . . . .    ----   -----       
+EXTI3_IRQHANDLER . . . . .    ----   -----       
+EXTI4_IRQHANDLER . . . . .    ----   -----       
+EXTI9_5_IRQHANDLER . . . .    ----   -----       
+FLASH_IRQHANDLER . . . . .    ----   -----       
+FSMC_IRQHANDLER. . . . . .    ----   -----       
+HARDFAULTEXCEPTION . . . .    ----   -----       
+HEAP . . . . . . . . . . .    ----   -----       
+HEAP_MEM . . . . . . . . .    ----   -----       
+HEAP_SIZE. . . . . . . . .  N NUMB   0400H   A   
+I2C1_ER_IRQHANDLER . . . .    ----   -----       
+I2C1_EV_IRQHANDLER . . . .    ----   -----       
+I2C2_ER_IRQHANDLER . . . .    ----   -----       
+I2C2_EV_IRQHANDLER . . . .    ----   -----       
+IMPORT . . . . . . . . . .    ----   -----       
+LDR. . . . . . . . . . . .    ----   -----       
+MEMMANAGEEXCEPTION . . . .    ----   -----       
+NMIEXCEPTION . . . . . . .    ----   -----       
+NOINIT . . . . . . . . . .    ----   -----       
+PENDSVC. . . . . . . . . .    ----   -----       
+PRESERVE8. . . . . . . . .    ----   -----       
+PROC . . . . . . . . . . .    ----   -----       
+PVD_IRQHANDLER . . . . . .    ----   -----       
+RCC_IRQHANDLER . . . . . .    ----   -----       
+READONLY . . . . . . . . .    ----   -----       
+READWRITE. . . . . . . . .    ----   -----       
+RESET. . . . . . . . . . .    ----   -----       
+RESET_HANDLER. . . . . . .    ----   -----       
+RTCALARM_IRQHANDLER. . . .    ----   -----       
+RTC_IRQHANDLER . . . . . .    ----   -----       
+SDIO_IRQHANDLER. . . . . .    ----   -----       
+SPACE. . . . . . . . . . .    ----   -----       
+SPI1_IRQHANDLER. . . . . .    ----   -----       
+A51 MACRO ASSEMBLER  STM32F10X_VECTOR                                                     06/03/2012 17:04:55 PAGE    13
+
+SPI2_IRQHANDLER. . . . . .    ----   -----       
+SPI3_IRQHANDLER. . . . . .    ----   -----       
+STACK. . . . . . . . . . .    ----   -----       
+STACK_MEM. . . . . . . . .    ----   -----       
+STACK_SIZE . . . . . . . .  N NUMB   0400H   A   
+SVCHANDLER . . . . . . . .    ----   -----       
+SYSTICKHANDLER . . . . . .    ----   -----       
+TAMPER_IRQHANDLER. . . . .    ----   -----       
+TEXT . . . . . . . . . . .    ----   -----       
+THUMB. . . . . . . . . . .    ----   -----       
+TIM1_BRK_IRQHANDLER. . . .    ----   -----       
+TIM1_CC_IRQHANDLER . . . .    ----   -----       
+TIM1_TRG_COM_IRQHANDLER. .    ----   -----       
+TIM1_UP_IRQHANDLER . . . .    ----   -----       
+TIM2_IRQHANDLER. . . . . .    ----   -----       
+TIM3_IRQHANDLER. . . . . .    ----   -----       
+TIM4_IRQHANDLER. . . . . .    ----   -----       
+TIM5_IRQHANDLER. . . . . .    ----   -----       
+TIM6_IRQHANDLER. . . . . .    ----   -----       
+TIM7_IRQHANDLER. . . . . .    ----   -----       
+TIM8_BRK_IRQHANDLER. . . .    ----   -----       
+TIM8_CC_IRQHANDLER . . . .    ----   -----       
+TIM8_TRG_COM_IRQHANDLER. .    ----   -----       
+TIM8_UP_IRQHANDLER . . . .    ----   -----       
+UART4_IRQHANDLER . . . . .    ----   -----       
+UART5_IRQHANDLER . . . . .    ----   -----       
+USAGEFAULTEXCEPTION. . . .    ----   -----       
+USART1_IRQHANDLER. . . . .    ----   -----       
+USART2_IRQHANDLER. . . . .    ----   -----       
+USART3_IRQHANDLER. . . . .    ----   -----       
+USBWAKEUP_IRQHANDLER . . .    ----   -----       
+USB_HP_CAN_TX_IRQHANDLER .    ----   -----       
+USB_LP_CAN_RX0_IRQHANDLER.    ----   -----       
+WWDG_IRQHANDLER. . . . . .    ----   -----       
+__HEAP_BASE. . . . . . . .    ----   -----       
+__HEAP_LIMIT . . . . . . .    ----   -----       
+__INITIAL_SP . . . . . . .    ----   -----       
+__MAIN . . . . . . . . . .    ----   -----       
+__MICROLIB . . . . . . . .    ----   -----       
+__VECTORS. . . . . . . . .    ----   -----       
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 170 ERROR(S)

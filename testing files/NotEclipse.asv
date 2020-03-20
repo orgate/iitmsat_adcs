@@ -1,0 +1,14 @@
+function y = NotEclipse(r_ECI, S_ECI)
+COS=sum(r_ECI.*S_ECI)/(sqrt(sum(r_ECI.*r_ECI))*sqrt(sum(S_ECI.*S_ECI)))
+SIN=sqrt(1-COS^2)
+TAN=SIN/COS;
+projection=TAN*sqrt(sum(r_ECI.*r_ECI));
+if (sum(r_ECI.*S_ECI)>0)
+    y=1
+end
+if (r_ECI-r_ECI.*S_ECI)*S_ECIprojection>=6400000)
+    y=1
+else
+    y=0
+end
+end

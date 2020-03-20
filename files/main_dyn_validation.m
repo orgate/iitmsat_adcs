@@ -1,0 +1,12 @@
+
+syms p q r
+omega=[p ;q ;r];
+W=skew_sym(omega);
+Isat=7/12*[20*2+30^2 0 0;0 30^2 0; 0 0 30*2+30^2]*10^-4;
+coup_term=-inv(Isat)*(W*(Isat*omega));
+sigma=[coeffs(coup_term(1));...
+    coeffs(coup_term(2));...
+    coeffs(coup_term(3))];
+[T Y]=dyn_validn(sigma);
+
+

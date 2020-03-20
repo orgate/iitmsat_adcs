@@ -1,0 +1,104 @@
+C51 COMPILER V9.05   SYSCLOCK                                                              06/03/2012 17:04:53 PAGE 1   
+
+
+C51 COMPILER V9.05, COMPILATION OF MODULE SYSCLOCK
+OBJECT MODULE PLACED IN .\SysClock.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\SysClock.c DEBUG OBJECTEXTEND OBJECT(.\SysClock.obj)
+
+line level    source
+
+   1          
+   2          #include "SysClock.h"
+*** WARNING C318 IN LINE 7 OF ..\SysClock.h: can't open file 'stm32f10x_lib.h'
+*** ERROR C141 IN LINE 15 OF ..\SysClock.h: syntax error near 'timeSpan', expected ')'
+   3          
+   4          /* Function pointer for timer */
+   5          static void (*SYSCLOCK_extFunc)(void);
+   6          
+   7          /*******************************************************************************
+   8          * Function Name  : SYSCLOCK_Init
+   9          * Description    : Initialize the SYSTick Peripheral.
+  10          * Input          : timeSpan = Time span of the timer in micro seconds.
+  11          *                : ptr2Func = Pointer to function to call on timer tick.
+  12          * Output         : None
+  13          * Return         : None
+  14          *******************************************************************************/
+  15          void SYSCLOCK_Init(void (*ptr2Func)(void))
+  16          {       
+  17   1              /* Set the priority and sub priority of the SysTick interrupt handler */
+  18   1              NVIC_SystemHandlerPriorityConfig(SystemHandler_SysTick, 1, 2);
+*** ERROR C202 IN LINE 18 OF ..\SysClock.c: 'SystemHandler_SysTick': undefined identifier
+  19   1      
+  20   1        /* Enable SysTick interrupt */
+  21   1        SysTick_ITConfig(ENABLE);
+*** ERROR C202 IN LINE 21 OF ..\SysClock.c: 'ENABLE': undefined identifier
+  22   1              
+  23   1              /* Set external function pointer */
+  24   1              SYSCLOCK_extFunc = ptr2Func;
+  25   1      }
+  26          
+  27          /*******************************************************************************
+  28          * Function Name  : SYSCLOCK_Enable
+  29          * Description    : Enable the SYSTick Peripheral.
+  30          * Input          : None
+  31          * Output         : None
+  32          * Return         : None
+  33          *******************************************************************************/
+  34          void SYSCLOCK_Enable()
+  35          {
+  36   1              /* Enable the SysTick Counter */
+  37   1        SysTick_CounterCmd(SysTick_Counter_Enable);           
+*** ERROR C202 IN LINE 37 OF ..\SysClock.c: 'SysTick_Counter_Enable': undefined identifier
+  38   1      }
+  39          
+  40          /*******************************************************************************
+  41          * Function Name  : SYSCLOCK_Disable
+  42          * Description    : Disable the SYSTick Peripheral.
+  43          * Input          : None
+  44          * Output         : None
+  45          * Return         : None
+  46          *******************************************************************************/
+  47          void SYSCLOCK_Disable()
+  48          {
+  49   1              /* Disable the SysTick Counter */
+  50   1        SysTick_CounterCmd(SysTick_Counter_Disable);          
+C51 COMPILER V9.05   SYSCLOCK                                                              06/03/2012 17:04:53 PAGE 2   
+
+*** ERROR C202 IN LINE 50 OF ..\SysClock.c: 'SysTick_Counter_Disable': undefined identifier
+  51   1      }
+  52          
+  53          /*******************************************************************************
+  54          * Function Name  : SYSCLOCK_SetTimeSpan
+  55          * Description    : Set the timespan for the SYSTick Peripheral timer.
+  56          * Input          : timeSpan = Time span of the timer in micro seconds.
+  57          * Output         : None
+  58          * Return         : None
+  59          *******************************************************************************/
+  60          void SYSCLOCK_SetTimeSpan(u32 timeSpan)
+*** ERROR C141 IN LINE 60 OF ..\SysClock.c: syntax error near 'timeSpan', expected ')'
+  61          {
+  62   1              /* Disable the SysTick Counter */
+  63   1        /* SysTick_CounterCmd(SysTick_Counter_Disable); */
+  64   1              
+  65   1              /* SysTick end of count event each 1ms with input clock equal to 9MHz (HCLK/8, default) */
+  66   1        SysTick_SetReload(9*timeSpan);
+*** ERROR C202 IN LINE 66 OF ..\SysClock.c: 'timeSpan': undefined identifier
+  67   1              
+  68   1              /* Enable the SysTick Counter */
+  69   1        /* SysTick_CounterCmd(SysTick_Counter_Enable); */
+  70   1      }
+  71          
+  72          /*******************************************************************************
+  73          * Function Name  : SysTickHandler
+  74          * Description    : This function handles SysTick Handler.
+  75          * Input          : None
+  76          * Output         : None
+  77          * Return         : None
+  78          *******************************************************************************/
+  79          void SysTickHandler(void)
+  80          {
+  81   1              (*SYSCLOCK_extFunc)();  
+  82   1      }
+  83          
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  7 ERROR(S)
